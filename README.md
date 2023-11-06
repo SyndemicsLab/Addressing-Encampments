@@ -24,8 +24,30 @@ git clone https://github.com/SyndemicsLab/RESPONDv1.git
 ```
 
 **3. Use the RESPONDv1 repository to generate inputs 1 - 1,000**
-**4. Run the Status Quo script, put the resulting 1,000 input sets into the status_quo inputs folder**
-**5. Copy user_inputs.R, input_file_paths.R, and the results script into each input set**
-**6. Run RESPONDv1, copying outputs into the status_quo outputs folder**
+- Instructions
+- Put the 1,000 input sets into the folder 'ec_base_inputs'
+
+**4. Update the age structure**
+- Script is called: *age_chunks_5_to_2.R*
+- Script does the following: 
+- This is how to run it on the 1,000 base case inputs
+
+**4. Run the Status Quo script, put the resulting 1,000 input sets into the status quo inputs folder**
+- Script is called:
+- Script does the following: 
+- This is how to run it on all 1,000 base case inputs
+
+**5. Copy user_inputs.R and input_file_paths.R into each input set**
+- This is how to copy the files (they are currently in each strategy_input folder)
+
+**6. Run RESPONDv1, copying outputs into the status quo outputs folder**
+- This is how to run RESPONDv1
+- Make sure the outputs go to the 'sq_outputs' folder
+
 **7. Run the results script to calculate results**
+- Script is called:
+- Script does the following:
+- This is how to run the script: 
+
 **8. Repeat steps 4-7 for the other strategies: Sweep, Housing with MOUD Required, and Housing with MOUD Choice**
+- Make sure to put the inputs and outputs in the right folders
