@@ -8,7 +8,7 @@ Brief description, point to RESPOND v1 repository
 
 ## Dependencies
 **R**
--> Make sure Rscript is on PATH
+-> Make sure Rscript is on PATH  
 **Git**
 
 ## Instructions
@@ -29,11 +29,20 @@ git clone https://github.com/SyndemicsLab/RESPONDv1.git
 ```
 
 **3. Use the RESPONDv1 repository to generate inputs 1 - 1,000**
-- Instructions
-- Put the 1,000 input sets into the folder 'ec_base_inputs'
+- Navigate to RESPONDv1.
+- For Windows, open Command Prompt as an administrator. For Unix,
+- Run *buildbase.bat* using the following command. This will create 1,000 input sets and copy them into respond_sweeps_public/ec_base_inputs
+```
+C:\YOURFILEPATH\respond_sweeps_public\ec_base_inputs\buildbase.bat
+```
+- This will take a while! Maybe go for a walk or make yourself a little snack.
 
 **4. Update the age structure**
+- For Windows, go back to your Command Prompt. For Unix, 
 - Script is called: *age_chunks_5_to_2.R*
+```
+C:\YOURFILEPATH\respond_sweeps_public\ec_base_inputs\age_update.bat
+```
 - Script does the following: 
 - This is how to run it on the 1,000 base case inputs
 
