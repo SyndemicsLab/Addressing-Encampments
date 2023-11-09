@@ -6,6 +6,11 @@ Titled "Mortality and Economic Impact of a Police Sweep on People Who are Unshel
 ## RESPOND Model
 Brief description, point to RESPOND v1 repository
 
+## Dependencies
+**R**
+-> Make sure Rscript is on PATH
+**Git**
+
 ## Instructions
 **1. Clone this repository**
 - On GitHub.com, navigate to the main page of the repository. Above the list of files, click **<> Code**.
