@@ -31,37 +31,42 @@ git clone https://github.com/SyndemicsLab/RESPONDv1.git
 **3. Use the RESPONDv1 repository to generate inputs 1 - 1,000**
 - Navigate to RESPONDv1.
 - For Windows, open Command Prompt as an administrator. For Unix,
-- Run *buildbase.bat* using the following command. This will create 1,000 input sets and copy them into respond_sweeps_public/ec_base_inputs
+- From anywhere, run *buildbase.bat* using the following command. This will create 1,000 input sets and copy them into respond_sweeps_public/ec_base_inputs
 ```
 C:\YOURFILEPATH\respond_sweeps_public\ec_base_inputs\buildbase.bat
 ```
 - This will take a while! Maybe go for a walk or make yourself a little snack.
 
 **4. Update the age structure**
-- For Windows, go back to your Command Prompt. For Unix, 
-- Script is called: *age_chunks_5_to_2.R*
+- For Windows, go back to your Command Prompt. Navigate to the 'ec_base_inputs' folder, and run the age_chunks_5_to_2 script to update the age structure of your base 1,000 files.
+- For Unix, 
 ```
-C:\YOURFILEPATH\respond_sweeps_public\ec_base_inputs\age_update.bat
+Rscript age_chunks_5_to_2.R
 ```
-- Script does the following: 
-- This is how to run it on the 1,000 base case inputs
+- This will also take a while. Do you have a pet in need of some attention?
 
-**4. Run the Status Quo script, put the resulting 1,000 input sets into the status quo inputs folder**
-- Script is called:
-- Script does the following: 
-- This is how to run it on all 1,000 base case inputs
+**5. Run the Status Quo script, put the resulting 1,000 input sets into the status quo inputs folder**
+- Navigate to the 'sq_inputs' folder.
+- Run the script 'something_sq.R'. This will read the base inputs, update them to reflect the status quo strategy, and populate them into the 'sq_inputs' folder.
+```
+Rscript something_sq.R
+```
 
-**5. Copy user_inputs.R and input_file_paths.R into each input set**
-- This is how to copy the files (they are currently in each strategy_input folder)
+**6. Copy user_inputs.R and input_file_paths.R into each input set**
+- Still in the 'sq_inputs' folder, run 'cp_files.r' to copy the two necessary Rscripts into each input folder.
+- The necessary R scripts are 'user_inputs.R' and 'input_file_paths.R', both of which are pre-set and in the strategy-specific folders.
+```
+Rscript cp_files.R
+```
 
-**6. Run RESPONDv1, copying outputs into the status quo outputs folder**
+**7. Run RESPONDv1, copying outputs into the status quo outputs folder**
 - This is how to run RESPONDv1
 - Make sure the outputs go to the 'sq_outputs' folder
 
-**7. Run the results script to calculate results**
+**8. Run the results script to calculate results**
 - Script is called:
 - Script does the following:
 - This is how to run the script: 
 
-**8. Repeat steps 4-7 for the other strategies: Sweep, Housing with MOUD Required, and Housing with MOUD Choice**
+**9. Repeat steps 5-8 for the other strategies: Sweep, Housing with MOUD Required, and Housing with MOUD Choice**
 - Make sure to put the inputs and outputs in the right folders
