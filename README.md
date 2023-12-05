@@ -31,9 +31,13 @@ git clone https://github.com/SyndemicsLab/RESPONDv1.git
 **3. Use the RESPONDv1 repository to generate inputs 1 - 1,000**
 - Navigate to RESPONDv1.
 - For Windows, open Command Prompt as an administrator. For Unix,
-- From anywhere, run *buildbase.bat* using the following command. This will create 1,000 input sets and copy them into respond_sweeps_public/ec_base_inputs
+- Navigate to the base inputs folder.
 ```
-C:\YOURFILEPATH\respond_sweeps_public\ec_base_inputs\buildbase.bat
+cd C:\YOURFILEPATH\respond_sweeps_public\ec_base_inputs
+```
+- Run *buildbase.bat* using the following command. This will create 1,000 input sets and copy them into respond_sweeps_public/ec_base_inputs
+```
+buildbase.bat
 ```
 - This will take a while! Maybe go for a walk or make yourself a little snack.
 
