@@ -1,0 +1,29 @@
+﻿od_rate_mult,strategy,value
+0,Status Quo,6.07
+0.5,Status Quo,6.07
+1,Status Quo,6.07
+1.5,Status Quo,6.07
+2,Status Quo,6.07
+2.5,Status Quo,6.07
+3,Status Quo,6.07
+0,Sweep,7.09
+0.5,Sweep,7.09
+1,Sweep,7.09
+1.5,Sweep,7.09
+2,Sweep,7.09
+2.5,Sweep,7.09
+3,Sweep,7.09
+0,Housing (MOUD Required),5.99
+0.5,Housing (MOUD Required),6.19
+1,Housing (MOUD Required),6.38
+1.5,Housing (MOUD Required),6.59
+2,Housing (MOUD Required),6.78
+2.5,Housing (MOUD Required),6.98
+3,Housing (MOUD Required),7.17
+0,Housing (MOUD Choice),1.68
+0.5,Housing (MOUD Choice),3.7
+1,Housing (MOUD Choice),5.69
+1.5,Housing (MOUD Choice),7.64
+2,Housing (MOUD Choice),9.55
+2.5,Housing (MOUD Choice),11.43
+3,Housing (MOUD Choice),13.27
