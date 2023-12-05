@@ -1,0 +1,5 @@
+initial_oud_state,to_No_Treatment,to_Buprenorphine,to_Naltrexone,to_Methadone,to_Detox,to_Post.Buprenorphine,to_Post.Naltrexone,to_Post.Methadone,to_Post.Detox
+Active_Noninjection,1,0.256505576,0.102857143,0.432509506,0,1,1,1,1
+Active_Injection,1,0.256505576,0.102857143,0.432509506,0,1,1,1,1
+Nonactive_Noninjection,1,1,1,1,1,0.82161609,0.50201747,0.94217489,0.59024967
+Nonactive_Injection,1,1,1,1,1,0.46499397,0.87843971,0.68964427,0.19175809
