@@ -52,3 +52,12 @@ change_agegrp_chunk <- function(data, size.out, transformation, cols, grouping){
     return(unique(out))
   }
 }
+
+DSA <- function(data, filter, cycle, pct_change){
+  data <- as.data.table(data)
+  for(c in cycle){
+    DT <- data[initial_block == filter, paste0("to_", filter, "_cycle", c) := get(paste0("to_", filter, "_cycle", c))*pct_change
+               ][, paste0("to_corresponding_post_trt_cycle", c) := 1 - get(paste0("to_", filter, "_cycle", c))] 
+  }
+  return(DT)
+}
