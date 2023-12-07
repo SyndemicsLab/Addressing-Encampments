@@ -11,9 +11,9 @@ currentfiles <- c("user_inputs.R", "input_file_paths.R")
 
 for (input_folder in folders) {
   for (file_to_copy in currentfiles) {
-    dest_file <- file.path(input_folder, file_to_copy)
-    file.copy(from = file_to_copy, to = dest_file, 
-              overwrite = TRUE, recursive = FALSE, 
-              copy.mode = TRUE)
+    file_in <- paste0("./../setup_files/SQ/", file_to_copy)
+    file_out <- paste0("./", input_folder, "/")
+    file.copy(from = file.path(file_in), to = file_out, 
+              overwrite = TRUE, copy.date = TRUE)
   }
-}
+} 

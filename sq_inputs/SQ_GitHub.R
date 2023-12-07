@@ -10,7 +10,13 @@
 
 
 
-
+`%ni%` <- Negate(`%in%`)
+filter_input <- function(data){
+  out <- data %>% 
+    filter(block %ni% c("Detox", "Post-Detox"),
+           agegrp %ni% c("10_11", "12_13", "14_15", "16_17"))
+  out
+}
 
 # getwd()
 
@@ -32,11 +38,8 @@ for (input_folder in folders) {
 # init_cohort <- read.csv(paste0("input", input_number, "/init_cohort.csv"))
 
 init_cohort <- init_cohort %>%
-  filter(block != "Detox") %>%
-  filter(agegrp != "10_11") %>%
-  filter(agegrp != "12_13") %>%
-  filter(agegrp != "14_15") %>%
-  filter(agegrp != "16_17") %>%
+  filter(block != "Detox",
+         agegrp %ni% c("10_11", "12_13", "14_15", "16_17")) %>%
   arrange(
     factor(block, levels = c("No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora")),
     agegrp, desc(sex), factor(oud, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection"))
@@ -60,7 +63,7 @@ new_diasp$block <- "diaspora"
 init_cohort <- init_cohort %>%
   rbind(new_corr, new_section, new_diasp)
 
-write.csv(init_cohort, paste0(input_number, '/', "init_cohort.csv"), row.names = F)
+write.csv(init_cohort, paste0(input_folder,'/',"init_cohort.csv"), row.names = F)
 
 }
 
@@ -277,7 +280,7 @@ all_types_od <- all_types_od %>%
                                  "post-section", "post-diaspora")),
         agegrp, desc(sex), factor(oud, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection")))
 
-write.csv(all_types_od, paste0("input", input_number, "/all_types_overdose.csv"), row.names = F)
+write.csv(all_types_od, paste0(input_folder,'/',"all_types_overdose.csv", sep = ""), row.names = F)
 
 }
 
@@ -299,11 +302,17 @@ background_mort <- background_mort %>%
   filter(agegrp != "14_15") %>%
   filter(agegrp != "16_17")
 
-write.csv(background_mort, paste0("input", input_number, "/background_mortality.csv", sep = ""), row.names = F)
+write.csv(background_mort, paste0(input_folder,'/',"background_mortality.csv", sep = ""), row.names = F)
+
+}
 
 ### block initiation effect ##############
 
-block_init_effect <- read.csv(paste0("input", input_number, "/block_init_effect.csv"))
+folders <- Sys.glob("input*")
+print(folders)
+
+for (input_folder in folders) {
+  block_init_effect <- read.csv(paste0(input_folder,'/',"block_init_effect.csv"))
 
 block_init_effect <- block_init_effect %>% 
   mutate(
@@ -330,7 +339,7 @@ block_init_effect <- block_init_effect %>% relocate(to_Post.Corrections, .after 
 block_init_effect <- block_init_effect %>% relocate(to_post.section, .after = to_Post.Corrections)
 block_init_effect <- block_init_effect %>% relocate(to_post.diaspora, .after = to_post.section)
 
-write.csv(block_init_effect, paste0("input", input_number, "/block_init_effect.csv"), row.names = F)
+write.csv(block_init_effect, paste0(input_folder,'/',"block_init_effect.csv", sep = ""), row.names = F)
 
 }
 
@@ -728,11 +737,18 @@ problems <- block_trans %>%
 # 144 equal 1
 # everything is either 0 or 1
 
-write.csv(block_trans, paste0("input", input_number, "/block_trans.csv"), row.names = F)
+write.csv(block_trans, paste0(input_folder,'/',"block_trans.csv", sep = ""), row.names = F)
+
+}
 
 ### entering cohort ##########
 
-enter_cohort <- read.csv(paste0("input", input_number, "/entering_cohort.csv"))
+folders <- Sys.glob("input*")
+print(folders)
+
+for (input_folder in folders) {
+  enter_cohort <- read.csv(paste0(input_folder,'/',"entering_cohort.csv"))
+  
 enter_cohort[, c(4)] <- rep(0, length.out = 90)
 
 enter_cohort <- enter_cohort %>%
@@ -744,7 +760,7 @@ enter_cohort <- enter_cohort %>%
   filter(agegrp != "14_15") %>%
   filter(agegrp != "16_17")
 
-write.csv(enter_cohort, paste0("input", input_number, "/entering_cohort.csv"), row.names = F)
+write.csv(enter_cohort, paste0(input_folder,'/',"entering_cohort.csv", sep = ""), row.names = F)
 
 }
 
@@ -775,7 +791,7 @@ fatal_od <- fatal_od %>%
   select(1, 4, 5, 2, 3) %>%
   select(-5)
 
-write.csv(fatal_od, paste0("input", input_number, "/fatal_overdose.csv"), row.names = F)
+write.csv(fatal_od, paste0(input_folder,'/',"fatal_overdose.csv", sep = ""), row.names = F)
 
 }
 
@@ -870,7 +886,7 @@ oud_trans <- oud_trans %>%
 
 # unique(oud_trans$block)
 
-write.csv(oud_trans, paste0("input", input_number, "/oud_trans.csv"), row.names = F)
+write.csv(oud_trans, paste0(input_folder,'/',"oud_trans.csv", sep = ""), row.names = F)
 
 }
 
@@ -972,7 +988,7 @@ SMR <- SMR %>%
     agegrp, desc(sex), factor(oud, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection"))
   )
 
-write.csv(SMR, paste0("input", input_number, "/SMR.csv"), row.names = F)
+write.csv(SMR, paste0(input_folder,'/',"SMR.csv", sep = ""), row.names = F)
 
 }
 
@@ -1001,7 +1017,7 @@ bg_utility <- bg_utility %>%
   filter(agegrp != "14_15") %>%
   filter(agegrp != "16_17")
 
-write.csv(bg_utility, paste0("input", input_number, "/cost_life/bg_utility.csv"), row.names = F)
+write.csv(bg_utility, paste0(input_folder,'/',"cost_life/bg_utility.csv", sep = ""), row.names = F)
 
 }
 
@@ -1081,7 +1097,7 @@ oud_utility <- oud_utility %>%
     factor(oud, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection"))
   )
 
-write.csv(oud_utility, paste("input", input_number, "/cost_life/oud_utility.csv", sep = ""), row.names = F)
+write.csv(oud_utility, paste0(input_folder,'/',"cost_life/oud_utility.csv", sep = ""), row.names = F)
 
 }
 
@@ -1118,7 +1134,7 @@ setting_utility <- setting_utility %>%
       "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections", "post-section", "post-diaspora"))
   )
 
-write.csv(setting_utility, paste0("input", input_number, "/cost_life/setting_utility.csv"), row.names = F)
+write.csv(setting_utility, paste0(input_folder,'/',"cost_life/setting_utility.csv", sep = ""), row.names = F)
 
 }
 
@@ -1134,7 +1150,8 @@ for (input_folder in folders) {
   
 # overdose_cost <- read.csv(paste0("input", input_number, "/cost_life/overdose_cost.csv"))
 # it's already correct, don't change anything.
-write.csv(overdose_cost, paste0("input", input_number, "/cost_life/overdose_cost.csv"), row.names = F)
+  
+write.csv(overdose_cost, paste0(input_folder,'/',"cost_life/overdose_cost.csv", sep = ""), row.names = F)
 
 }
 
@@ -1157,7 +1174,7 @@ pharmaceutical_cost <- pharmaceutical_cost %>%
   add_row(block = "diaspora",
           pharmaceutical_cost_.healthcare_system = 0)
   
-write.csv(pharmaceutical_cost, paste0("input", input_number, "/cost_life/pharmaceutical_cost.csv"), row.names = F)
+write.csv(pharmaceutical_cost, paste0(input_folder,'/',"cost_life/pharmaceutical_cost.csv", sep = ""), row.names = F)
 
 }
 
@@ -1180,7 +1197,7 @@ treatment_utilization_cost <- treatment_utilization_cost %>%
           treatment_utilization_cost_.healthcare_system = 0) %>%
   filter(block != "Detox")
   
-write.csv(treatment_utilization_cost, paste0("input", input_number, "/cost_life/treatment_utilization_cost.csv"), row.names = F)
+write.csv(treatment_utilization_cost, paste0(input_folder,'/',"cost_life/treatment_utilization_cost.csv", sep = ""), row.names = F)
 
 }
 
@@ -1245,7 +1262,7 @@ healthcare_utilization_cost <- healthcare_utilization_cost %>%
   filter(agegrp != "14_15") %>%
   filter(agegrp != "16_17")
 
-write.csv(healthcare_utilization_cost, paste0("input", input_number, "/cost_life/healthcare_utilization_cost.csv"), row.names = F)
+write.csv(healthcare_utilization_cost, paste0(input_folder,'/',"cost_life/healthcare_utilization_cost.csv", sep = ""), row.names = F)
 
 }
 

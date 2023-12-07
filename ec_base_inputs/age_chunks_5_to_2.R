@@ -203,7 +203,7 @@ sum(enter_cohort$number_of_new_comers_cycle52)
 enter_cohort <- enter_cohort %>%
   arrange(agegrp, desc(sex))
 
-write.csv(enter_cohort, paste0(input_folder,'/',"enter_cohort.csv", sep = ""), row.names = F)
+write.csv(enter_cohort, paste0(input_folder,'/',"entering_cohort.csv", sep = ""), row.names = F)
 }
 
 #### OUD transitions ####
