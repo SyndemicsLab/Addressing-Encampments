@@ -2,15 +2,13 @@
 
 ## Script for Status Quo scenario
 ## Author: Hana Zwick
-##  Last updated 04/25/2023
+##  Last updated 05/15/2023
 
-# This version runs on the computer with a single set of parameter inputs, but
-# is closer to the cluster in that it reads an ec base case file and then 
-# manipulates it and writes it to the input# file, with no shell tables used.
+# This version runs on the cluster, not a computer
 
-# Idealistic scenario, MOUD choice
+# Realistic scenario, no MOUD choice
 # This is the model with transitional housing at week 53
-# Two housing blocks: with and without meds
+# One housing blocks: with meds
 
 
 
@@ -26,12 +24,15 @@ library(SciViews)
 arguments <- commandArgs(trailingOnly = TRUE)
 input_number <- arguments[1]
 
-
 ##### PROBABILITIES ########################################################
 
 ### initial cohort ##########
 
-init_cohort <- read.csv(paste0("input", input_number, "/init_cohort.csv"))
+folders <- Sys.glob("input*")
+print(folders)
+
+for (input_folder in folders) {
+  init_cohort <- read.csv(paste0(input_folder,'/',"init_cohort.csv"))
 
 init_cohort <- init_cohort %>%
   filter(block != "Detox") %>%
@@ -60,26 +61,27 @@ new_housing_meds <- init_cohort %>%
 new_housing_meds[, c(5)] <- rep(0, length.out = 328)
 new_housing_meds$block <- "housing_meds"
 
-new_housing_nomeds <- init_cohort %>%
-  filter(block == "No_Treatment")
-new_housing_nomeds[, c(5)] <- rep(0, length.out = 328)
-new_housing_nomeds$block <- "housing_nomeds"
-
 init_cohort <- init_cohort %>%
-  rbind(new_corr, new_section, new_diasp, new_housing_meds, new_housing_nomeds)
+  rbind(new_corr, new_section, new_diasp, new_housing_meds)
 
 init_cohort <- init_cohort %>%
   arrange(
-    factor(block, levels = c("No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds", "housing_nomeds")),
+    factor(block, levels = c("No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds")),
     agegrp, desc(sex), factor(oud, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection"))
   )
 
-write.csv(init_cohort, paste0("input", input_number, "/init_cohort.csv"), row.names = F)
+write.csv(init_cohort, paste0(input_folder,'/',"init_cohort.csv"), row.names = F)
+
+}
 
 ### all types OD ###########
 
-all_types_od <- read.csv(paste0("input", input_number, "/all_types_overdose.csv"))
+folders <- Sys.glob("input*")
+print(folders)
 
+for (input_folder in folders) {
+  all_types_od <- read.csv(paste0(input_folder,'/',"all_types_overdose.csv"))
+  
 # add new time cycles, limit age
 all_types_od <- all_types_od %>%
   mutate(all_types_overdose_cycle53 = all_types_overdose_cycle156) %>%
@@ -108,10 +110,6 @@ housing_aod <- all_types_od %>%
   filter(block == "No_Treatment")
 housing_aod$block <- "housing_meds"
 
-housing_nm_aod <- all_types_od %>%
-  filter(block == "No_Treatment")
-housing_nm_aod$block <- "housing_nomeds"
-
 p_corr_aod <- all_types_od %>%
   filter(block == "No_Treatment")
 p_corr_aod$block <- "Post-Corrections"
@@ -128,20 +126,16 @@ p_housing_aod <- all_types_od %>%
   filter(block == "No_Treatment")
 p_housing_aod$block <- "post-housing_meds"
 
-p_housing_nm_aod <- all_types_od %>%
-  filter(block == "No_Treatment")
-p_housing_nm_aod$block <- "post-housing_nomeds"
-
-all_types_od <- rbind(all_types_od, corr_aod, sect_aod, diasp_aod, housing_aod, housing_nm_aod,
-                      p_corr_aod, p_sect_aod, p_diasp_aod, p_housing_aod, p_housing_nm_aod)
+all_types_od <- rbind(all_types_od, corr_aod, sect_aod, diasp_aod, housing_aod,
+                      p_corr_aod, p_sect_aod, p_diasp_aod, p_housing_aod)
 
 #arrange
 all_types_od <- all_types_od %>%
   filter(block != "Detox") %>%
   filter(block != "Post-Detox") %>%
   arrange(
-    factor(block, levels = c("No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds", "housing_nomeds",
-                             "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections", "post-section", "post-diaspora", "post-housing_meds", "post-housing_nomeds")),
+    factor(block, levels = c("No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds",
+                             "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections", "post-section", "post-diaspora", "post-housing_meds")),
     agegrp, desc(sex), factor(oud, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection"))) %>%
   select("block", "agegrp", "sex", "oud", "all_types_overdose_cycle52", "all_types_overdose_cycle53", "all_types_overdose_cycle56", 
          "all_types_overdose_cycle65", "all_types_overdose_cycle104")
@@ -226,19 +220,6 @@ all_types_od[all_types_od$block == "housing_meds", "all_types_overdose_cycle65"]
 
 all_types_od[all_types_od$block == "housing_meds", "all_types_overdose_cycle104"] <- 
   all_types_od[all_types_od$block == "Methadone", "all_types_overdose_cycle65"]
-
-## housing_nomeds = No Treatment
-all_types_od[all_types_od$block == "housing_nomeds", "all_types_overdose_cycle52"] <- 
-  all_types_od[all_types_od$block == "No_Treatment", "all_types_overdose_cycle65"]
-
-all_types_od[all_types_od$block == "housing_nomeds", "all_types_overdose_cycle53"] <- 
-  all_types_od[all_types_od$block == "No_Treatment", "all_types_overdose_cycle65"]
-
-all_types_od[all_types_od$block == "housing_nomeds", "all_types_overdose_cycle65"] <- 
-  all_types_od[all_types_od$block == "No_Treatment", "all_types_overdose_cycle65"]
-
-all_types_od[all_types_od$block == "housing_nomeds", "all_types_overdose_cycle104"] <- 
-  all_types_od[all_types_od$block == "No_Treatment", "all_types_overdose_cycle65"]
 
 ## post Buprenorphine
 all_types_od[all_types_od$block == "Post-Buprenorphine", "all_types_overdose_cycle52"] <-
@@ -330,7 +311,7 @@ all_types_od[all_types_od$block == "post-housing_meds", "all_types_overdose_cycl
 
 all_types_od[all_types_od$block == "post-housing_meds", "all_types_overdose_cycle53"] <-
   all_types_od[all_types_od$block == "Post-Methadone", "all_types_overdose_cycle65"]
-
+  
 all_types_od[all_types_od$block == "post-housing_meds", "all_types_overdose_cycle56"] <-
   all_types_od[all_types_od$block == "Post-Methadone", "all_types_overdose_cycle65"]
 
@@ -340,29 +321,19 @@ all_types_od[all_types_od$block == "post-housing_meds", "all_types_overdose_cycl
 all_types_od[all_types_od$block == "post-housing_meds", "all_types_overdose_cycle104"] <-
   all_types_od[all_types_od$block == "Post-Methadone", "all_types_overdose_cycle65"]
 
-## post housing_nomeds = No Treatment (this will be skipped over)
-all_types_od[all_types_od$block == "post-housing_nomeds", "all_types_overdose_cycle52"] <-
-  all_types_od[all_types_od$block == "No_Treatment", "all_types_overdose_cycle65"]
+write.csv(all_types_od, paste0(input_folder,'/',"all_types_overdose.csv", sep = ""), row.names = F)
 
-all_types_od[all_types_od$block == "post-housing_nomeds", "all_types_overdose_cycle53"] <-
-  all_types_od[all_types_od$block == "No_Treatment", "all_types_overdose_cycle65"]
-
-all_types_od[all_types_od$block == "post-housing_nomeds", "all_types_overdose_cycle56"] <-
-  all_types_od[all_types_od$block == "No_Treatment", "all_types_overdose_cycle65"]
-
-all_types_od[all_types_od$block == "post-housing_nomeds", "all_types_overdose_cycle65"] <-
-  all_types_od[all_types_od$block == "No_Treatment", "all_types_overdose_cycle65"]
-
-all_types_od[all_types_od$block == "post-housing_nomeds", "all_types_overdose_cycle104"] <-
-  all_types_od[all_types_od$block == "No_Treatment", "all_types_overdose_cycle65"]
-
-write.csv(all_types_od, paste0("input", input_number, "/all_types_overdose.csv"), row.names = F)
+}
 
 ### background mortality #############
 
-background_mort <- read.csv(paste0("input", input_number, "/background_mortality.csv"))
+folders <- Sys.glob("input*")
+print(folders)
 
-# don't change - this is the denominator for SMR, so the general population
+for (input_folder in folders) {
+  background_mort <- read.csv(paste0(input_folder,'/',"background_mortality.csv"))
+  
+# don't change - this is the SMR denominator, so the general population
 
 background_mort <- background_mort %>%
   filter(agegrp != "10_11") %>%
@@ -370,16 +341,22 @@ background_mort <- background_mort %>%
   filter(agegrp != "14_15") %>%
   filter(agegrp != "16_17")
 
-write.csv(background_mort, paste0("input", input_number, "/background_mortality.csv", sep = ""), row.names = F)
+write.csv(background_mort, paste0(input_folder,'/',"background_mortality.csv", sep = ""), row.names = F)
+
+}
 
 ### block initiation effect ##############
 
-block_init_effect <- read.csv(paste0("input", input_number, "/block_init_effect.csv"))
+folders <- Sys.glob("input*")
+print(folders)
 
+for (input_folder in folders) {
+  block_init_effect <- read.csv(paste0(input_folder,'/',"block_init_effect.csv"))
+  
 block_init_effect <- block_init_effect %>% 
   mutate(
-  to_section = 1, to_diaspora = 1, to_housing_meds = 1, to_Corrections = 1, to_housing_nomeds = 1,
-  to_post.section = 1, to_post.diaspora = 1, to_post.housing_meds = 1, to_Post.Corrections = 1, to_post.housing_nomeds = 1
+  to_section = 1, to_diaspora = 1, to_housing_meds = 1, to_Corrections = 1,
+  to_post.section = 1, to_post.diaspora = 1, to_post.housing_meds = 1, to_Post.Corrections = 1
 )
 # post corrections = shift to active
 block_init_effect[block_init_effect$initial_oud_state == "Nonactive_Noninjection", "to_Post.Corrections"] <- 0.4
@@ -398,71 +375,69 @@ block_init_effect[block_init_effect$initial_oud_state == "Nonactive_Injection", 
 # clean
 block_init_effect <- block_init_effect %>% 
   select("initial_oud_state", "to_No_Treatment", "to_Buprenorphine", "to_Naltrexone",
-         "to_Methadone", "to_Corrections", "to_section", "to_diaspora", "to_housing_meds", "to_housing_nomeds",
+         "to_Methadone", "to_Corrections", "to_section", "to_diaspora", "to_housing_meds",
          "to_Post.Buprenorphine", "to_Post.Naltrexone", "to_Post.Methadone", "to_Post.Corrections", 
-         "to_post.section", "to_post.diaspora", "to_post.housing_meds", "to_post.housing_nomeds")
+         "to_post.section", "to_post.diaspora", "to_post.housing_meds")
 
-write.csv(block_init_effect, paste0("input", input_number, "/block_init_effect.csv"), row.names = F)
+write.csv(block_init_effect, paste0(input_folder,'/',"block_init_effect.csv", sep = ""), row.names = F)
+
+}
 
 ### Block Transitions ############
+# the probability of transitioning from no treatment to its corresponding post-treatment should be zero
 
-block_trans <- read.csv(paste0("input", input_number, "/block_trans.csv"))
+folders <- Sys.glob("input*")
+print(folders)
+
+for (input_folder in folders) {
+  block_trans <- read.csv(paste0(input_folder,'/',"block_trans.csv"))
+  
 # DC_base_block_trans <- read.csv("../../../Model Documentation/Base Case/2021.3.25 Base Case/input1/block_trans.csv")
 
 # add in blocks (rows)
 corr_bt <- block_trans %>%
   filter(initial_block == "No_Treatment")
-corr_bt[, c(5:22)] <- rep(0, length.out = 360)
+corr_bt[, c(5:22)] <- rep(0, length.out = 144)
 corr_bt$initial_block <- "Corrections"
 
 p_corr_bt <- block_trans %>%
   filter(initial_block == "No_Treatment")
-p_corr_bt[, c(5:22)] <- rep(0, length.out = 360)
+p_corr_bt[, c(5:22)] <- rep(0, length.out = 144)
 p_corr_bt$initial_block <- "Post-Corrections"
 
 sect_bt <- block_trans %>%
   filter(initial_block == "No_Treatment")
-sect_bt[, c(5:22)] <- rep(0, length.out = 360)
+sect_bt[, c(5:22)] <- rep(0, length.out = 144)
 sect_bt$initial_block <- "section"
 
 p_sect_bt <- block_trans %>%
   filter(initial_block == "No_Treatment")
-p_sect_bt[, c(5:22)] <- rep(0, length.out = 360)
+p_sect_bt[, c(5:22)] <- rep(0, length.out = 144)
 p_sect_bt$initial_block <- "post-section"
 
 diasp_bt <- block_trans %>%
   filter(initial_block == "No_Treatment")
-diasp_bt[, c(5:22)] <- rep(0, length.out = 360)
+diasp_bt[, c(5:22)] <- rep(0, length.out = 144)
 diasp_bt$initial_block <- "diaspora"
 
 p_diasp_bt <- block_trans %>%
   filter(initial_block == "No_Treatment")
-p_diasp_bt[, c(5:22)] <- rep(0, length.out = 360)
+p_diasp_bt[, c(5:22)] <- rep(0, length.out = 144)
 p_diasp_bt$initial_block <- "post-diaspora"
 
 housing_bt <- block_trans %>%
   filter(initial_block == "No_Treatment")
-housing_bt[, c(5:22)] <- rep(0, length.out = 360)
+housing_bt[, c(5:22)] <- rep(0, length.out = 144)
 housing_bt$initial_block <- "housing_meds"
 
 p_housing_bt <- block_trans %>%
   filter(initial_block == "No_Treatment")
-p_housing_bt[, c(5:22)] <- rep(0, length.out = 360)
+p_housing_bt[, c(5:22)] <- rep(0, length.out = 144)
 p_housing_bt$initial_block <- "post-housing_meds"
-
-housing_nm_bt <- block_trans %>%
-  filter(initial_block == "No_Treatment")
-housing_nm_bt[, c(5:22)] <- rep(0, length.out = 360)
-housing_nm_bt$initial_block <- "housing_nomeds"
-
-p_housing_nm_bt <- block_trans %>%
-  filter(initial_block == "No_Treatment")
-p_housing_nm_bt[, c(5:22)] <- rep(0, length.out = 360)
-p_housing_nm_bt$initial_block <- "post-housing_nomeds"
 
 block_trans <- block_trans %>%
   rbind(corr_bt, p_corr_bt, sect_bt, p_sect_bt, diasp_bt, p_diasp_bt, 
-        housing_bt, p_housing_bt, housing_nm_bt, p_housing_nm_bt)
+        housing_bt, p_housing_bt)
 
 # remove Detox, Post-Detox (rows)
 block_trans <- block_trans %>%
@@ -473,9 +448,9 @@ block_trans <- block_trans %>%
 
 block_trans <- block_trans %>%
   arrange(agegrp, desc(sex), factor(oud, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection")), 
-          factor(initial_block, levels = c("No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds", "housing_nomeds",
+          factor(initial_block, levels = c("No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds",
                                            "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections", "post-section", "post-diaspora",
-                                           "post-housing_meds","post-housing_nomeds")))
+                                           "post-housing_meds")))
 
 # add new blocks (columns)
 
@@ -485,8 +460,7 @@ block_trans <- block_trans %>%
     to_Corrections_cycle52 = 0,
     to_section_cycle52 = 0,
     to_diaspora_cycle52 = 0,
-    to_housing_meds_cycle52 = 0,
-    to_housing_nomeds_cycle52 = 0
+    to_housing_meds_cycle52 = 0
   )
 
 # 53
@@ -500,7 +474,6 @@ block_trans <- block_trans %>%
     to_section_cycle53 = 0,
     to_diaspora_cycle53 = 0,
     to_housing_meds_cycle53 = 0,
-    to_housing_nomeds_cycle53 = 0,
     to_corresponding_post_trt_cycle53 = 0
   )
 
@@ -515,7 +488,6 @@ block_trans <- block_trans %>%
     to_section_cycle56 = 0,
     to_diaspora_cycle56 = 0,
     to_housing_meds_cycle56 = 0,
-    to_housing_nomeds_cycle56 = 0,
     to_corresponding_post_trt_cycle56 = 0
   )
 
@@ -530,7 +502,6 @@ block_trans <- block_trans %>%
     to_section_cycle65 = 0,
     to_diaspora_cycle65 = 0,
     to_housing_meds_cycle65 = 0,
-    to_housing_nomeds_cycle65 = 0,
     to_corresponding_post_trt_cycle65 = 0
   )
 
@@ -540,18 +511,17 @@ block_trans <- block_trans %>%
     to_Corrections_cycle104 = 0,
     to_section_cycle104 = 0,
     to_diaspora_cycle104 = 0,
-    to_housing_meds_cycle104 = 0,
-    to_housing_nomeds_cycle104 = 0
+    to_housing_meds_cycle104 = 0
   )
 
 # re-arrange columns using select(), remove Detox/Post-Detox by doing so
 block_trans <- block_trans %>%
   select(agegrp, sex, oud, initial_block, 
-         to_No_Treatment_cycle52, to_Buprenorphine_cycle52, to_Naltrexone_cycle52, to_Methadone_cycle52, to_Corrections_cycle52, to_section_cycle52, to_diaspora_cycle52, to_housing_meds_cycle52, to_housing_nomeds_cycle52, to_corresponding_post_trt_cycle52,
-         to_No_Treatment_cycle53, to_Buprenorphine_cycle53, to_Naltrexone_cycle53, to_Methadone_cycle53, to_Corrections_cycle53, to_section_cycle53, to_diaspora_cycle53, to_housing_meds_cycle53, to_housing_nomeds_cycle53, to_corresponding_post_trt_cycle53,
-         to_No_Treatment_cycle56, to_Buprenorphine_cycle56, to_Naltrexone_cycle56, to_Methadone_cycle56, to_Corrections_cycle56, to_section_cycle56, to_diaspora_cycle56, to_housing_meds_cycle56, to_housing_nomeds_cycle56, to_corresponding_post_trt_cycle56,
-         to_No_Treatment_cycle65, to_Buprenorphine_cycle65, to_Naltrexone_cycle65, to_Methadone_cycle65, to_Corrections_cycle65, to_section_cycle65, to_diaspora_cycle65, to_housing_meds_cycle65, to_housing_nomeds_cycle65, to_corresponding_post_trt_cycle65,
-         to_No_Treatment_cycle104, to_Buprenorphine_cycle104, to_Naltrexone_cycle104, to_Methadone_cycle104, to_Corrections_cycle104, to_section_cycle104, to_diaspora_cycle104, to_housing_meds_cycle104, to_housing_nomeds_cycle104, to_corresponding_post_trt_cycle104,
+         to_No_Treatment_cycle52, to_Buprenorphine_cycle52, to_Naltrexone_cycle52, to_Methadone_cycle52, to_Corrections_cycle52, to_section_cycle52, to_diaspora_cycle52, to_housing_meds_cycle52, to_corresponding_post_trt_cycle52,
+         to_No_Treatment_cycle53, to_Buprenorphine_cycle53, to_Naltrexone_cycle53, to_Methadone_cycle53, to_Corrections_cycle53, to_section_cycle53, to_diaspora_cycle53, to_housing_meds_cycle53, to_corresponding_post_trt_cycle53,
+         to_No_Treatment_cycle56, to_Buprenorphine_cycle56, to_Naltrexone_cycle56, to_Methadone_cycle56, to_Corrections_cycle56, to_section_cycle56, to_diaspora_cycle56, to_housing_meds_cycle56, to_corresponding_post_trt_cycle56,
+         to_No_Treatment_cycle65, to_Buprenorphine_cycle65, to_Naltrexone_cycle65, to_Methadone_cycle65, to_Corrections_cycle65, to_section_cycle65, to_diaspora_cycle65, to_housing_meds_cycle65, to_corresponding_post_trt_cycle65,
+         to_No_Treatment_cycle104, to_Buprenorphine_cycle104, to_Naltrexone_cycle104, to_Methadone_cycle104, to_Corrections_cycle104, to_section_cycle104, to_diaspora_cycle104, to_housing_meds_cycle104, to_corresponding_post_trt_cycle104,
          to_No_Treatment_cycle156, to_Buprenorphine_cycle156, to_Naltrexone_cycle156, to_Methadone_cycle156, to_corresponding_post_trt_cycle156)
 
 # limit age
@@ -669,7 +639,6 @@ block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle56
 block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle65"] <- block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle52"]
 block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle104"] <- block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle52"]
 
-
 # 52
 # no treatment -> bup, ntx, and mmt are calibrated
 
@@ -679,20 +648,17 @@ block_trans[block_trans$initial_block == "No_Treatment", "to_No_Treatment_cycle5
    - block_trans[block_trans$initial_block == "No_Treatment", "to_Methadone_cycle156"]
    - block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle52"])
 
-(rowSums(block_trans[block_trans$initial_block == "No_Treatment", 5:14]))
+(rowSums(block_trans[block_trans$initial_block == "No_Treatment", 5:13]))
 
 # 53
 # CHANGE PROPORTIONS MOVING TO SECTION/DIASPORA
+# everyone goes to either housing OR diaspora
 block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle53"] <- 0
-# MOUD -> housing with meds
-block_trans[block_trans$initial_block == "No_Treatment", "to_housing_nomeds_cycle53"] <- 0.675201
-# No Treatment -> housing without meds
-# 0.7087 - 0.1907(all MOUD moves to housing) = 0.518 left
-# 51.8% of the entire pop at cycle 53 = 13,617.25
-# 13,617.25 = 67.5201% of those in No Treatment
-block_trans[block_trans$initial_block == "No_Treatment", "to_diaspora_cycle53"] <- 
-  1 - block_trans[block_trans$initial_block == "No_Treatment", "to_housing_nomeds_cycle53"] - 
-  block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle53"]
+  # old version: 0.7087 - 0.1907(all MOUD moves to housing) = 0.518
+  # 51.8% of the entire pop at cycle 53 = 13,617.25
+  # 13,617.25 = 67.5201% of those in No Treatment
+block_trans[block_trans$initial_block == "No_Treatment", "to_diaspora_cycle53"] <- 1
+  
 block_trans[block_trans$initial_block == "No_Treatment", "to_section_cycle53"] <- 0
 
 block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle53"] <- 0
@@ -702,15 +668,11 @@ block_trans[block_trans$initial_block == "No_Treatment", "to_Methadone_cycle53"]
 
 block_trans[block_trans$initial_block == "No_Treatment", "to_No_Treatment_cycle53"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "No_Treatment", 15:24]))
+(rowSums(block_trans[block_trans$initial_block == "No_Treatment", 14:22]))
 
 # 56
-# DROP FROM 80% ACCEPTANCE RATE
-block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle56"] <- 
-    block_trans[block_trans$initial_block == "No_Treatment", "to_Buprenorphine_cycle52"] +
-    block_trans[block_trans$initial_block == "No_Treatment", "to_Naltrexone_cycle52"] + 
-    block_trans[block_trans$initial_block == "No_Treatment", "to_Methadone_cycle52"]
-block_trans[block_trans$initial_block == "No_Treatment", "to_housing_nomeds_cycle56"] <- 0.007015625
+# Everyone who would go to MOUD now goes to housing
+block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle56"] <- 0.007198
 block_trans[block_trans$initial_block == "No_Treatment", "to_diaspora_cycle56"] <- 0
 block_trans[block_trans$initial_block == "No_Treatment", "to_section_cycle56"] <- 0
 
@@ -727,17 +689,12 @@ block_trans[block_trans$initial_block == "No_Treatment", "to_No_Treatment_cycle5
    - block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle56"]
    - block_trans[block_trans$initial_block == "No_Treatment", "to_section_cycle56"]
    - block_trans[block_trans$initial_block == "No_Treatment", "to_diaspora_cycle56"]
-   - block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle56"]
-   - block_trans[block_trans$initial_block == "No_Treatment", "to_housing_nomeds_cycle56"])
+   - block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle56"])
 
-(rowSums(block_trans[block_trans$initial_block == "No_Treatment", 25:34]))
+(rowSums(block_trans[block_trans$initial_block == "No_Treatment", 23:31]))
 
 # 65
-block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle65"] <- 
-    block_trans[block_trans$initial_block == "No_Treatment", "to_Buprenorphine_cycle52"] +
-    block_trans[block_trans$initial_block == "No_Treatment", "to_Naltrexone_cycle52"] + 
-    block_trans[block_trans$initial_block == "No_Treatment", "to_Methadone_cycle52"]
-block_trans[block_trans$initial_block == "No_Treatment", "to_housing_nomeds_cycle65"] <- 0.007015625
+block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle65"] <- 0.007198
 block_trans[block_trans$initial_block == "No_Treatment", "to_diaspora_cycle65"] <- 0
 block_trans[block_trans$initial_block == "No_Treatment", "to_section_cycle65"] <- 0
 
@@ -754,21 +711,19 @@ block_trans[block_trans$initial_block == "No_Treatment", "to_No_Treatment_cycle6
    - block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle65"]
    - block_trans[block_trans$initial_block == "No_Treatment", "to_section_cycle65"]
    - block_trans[block_trans$initial_block == "No_Treatment", "to_diaspora_cycle65"]
-   - block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle65"]
-   - block_trans[block_trans$initial_block == "No_Treatment", "to_housing_nomeds_cycle65"])
+   - block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle65"])
 
-(rowSums(block_trans[block_trans$initial_block == "No_Treatment", 35:44]))
+(rowSums(block_trans[block_trans$initial_block == "No_Treatment", 32:40]))
 
 # 104
+# no treatment -> bup, ntx, and mmt are calibrated
 
-block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle104"] <- 
-    block_trans[block_trans$initial_block == "No_Treatment", "to_Buprenorphine_cycle52"] +
-    block_trans[block_trans$initial_block == "No_Treatment", "to_Naltrexone_cycle52"] + 
-    block_trans[block_trans$initial_block == "No_Treatment", "to_Methadone_cycle52"]
-block_trans[block_trans$initial_block == "No_Treatment", "to_housing_nomeds_cycle104"] <- 0.007015625
+block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle104"] <- 0.007198
 block_trans[block_trans$initial_block == "No_Treatment", "to_diaspora_cycle104"] <- 0
 block_trans[block_trans$initial_block == "No_Treatment", "to_section_cycle104"] <- 0
 
+block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle104"] <- 
+  block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle52"]
 block_trans[block_trans$initial_block == "No_Treatment", "to_Buprenorphine_cycle104"] <- 0
 block_trans[block_trans$initial_block == "No_Treatment", "to_Naltrexone_cycle104"] <- 0
 block_trans[block_trans$initial_block == "No_Treatment", "to_Methadone_cycle104"] <- 0
@@ -780,10 +735,9 @@ block_trans[block_trans$initial_block == "No_Treatment", "to_No_Treatment_cycle1
    - block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle104"]
    - block_trans[block_trans$initial_block == "No_Treatment", "to_section_cycle104"]
    - block_trans[block_trans$initial_block == "No_Treatment", "to_diaspora_cycle104"]
-   - block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle104"]
-   - block_trans[block_trans$initial_block == "No_Treatment", "to_housing_nomeds_cycle104"])
+   - block_trans[block_trans$initial_block == "No_Treatment", "to_housing_meds_cycle104"])
 
-(rowSums(block_trans[block_trans$initial_block == "No_Treatment", 45:54]))
+(rowSums(block_trans[block_trans$initial_block == "No_Treatment", 41:49]))
 
 ## Buprenorphine
 
@@ -791,44 +745,40 @@ block_trans[block_trans$initial_block == "No_Treatment", "to_No_Treatment_cycle1
 # already calibrated
 
 # 53
-# nobody to section, some to housing, some to post-state instead of diaspora
+# we assume everyone on meds will move to housing since they're already on meds
 
 block_trans[block_trans$initial_block == "Buprenorphine", "to_section_cycle53"] <- 0
 block_trans[block_trans$initial_block == "Buprenorphine", "to_diaspora_cycle53"] <- 0
 block_trans[block_trans$initial_block == "Buprenorphine", "to_housing_meds_cycle53"] <- 1
-block_trans[block_trans$initial_block == "Buprenorphine", "to_housing_nomeds_cycle53"] <- 0
-block_trans[block_trans$initial_block == "Buprenorphine", "to_Buprenorphine_cycle53"] <- 0
-
 block_trans[block_trans$initial_block == "Buprenorphine", "to_corresponding_post_trt_cycle53"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Buprenorphine", 15:24]))
+block_trans[block_trans$initial_block == "Buprenorphine", "to_Buprenorphine_cycle53"] <- 0
+
+(rowSums(block_trans[block_trans$initial_block == "Buprenorphine", 14:22]))
 
 # 56
 block_trans[block_trans$initial_block == "Buprenorphine", "to_housing_meds_cycle56"] <- 1
-block_trans[block_trans$initial_block == "Buprenorphine", "to_housing_nomeds_cycle56"] <- 0
 block_trans[block_trans$initial_block == "Buprenorphine", "to_corresponding_post_trt_cycle56"] <- 0
 
 block_trans[block_trans$initial_block == "Buprenorphine", "to_Buprenorphine_cycle56"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Buprenorphine", 25:34]))
+(rowSums(block_trans[block_trans$initial_block == "Buprenorphine", 23:31]))
 
 # 65
 block_trans[block_trans$initial_block == "Buprenorphine", "to_housing_meds_cycle65"] <- 1
-block_trans[block_trans$initial_block == "Buprenorphine", "to_housing_nomeds_cycle65"] <- 0
 block_trans[block_trans$initial_block == "Buprenorphine", "to_corresponding_post_trt_cycle65"] <- 0
 
 block_trans[block_trans$initial_block == "Buprenorphine", "to_Buprenorphine_cycle65"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Buprenorphine", 35:44]))
+(rowSums(block_trans[block_trans$initial_block == "Buprenorphine", 32:40]))
 
 # 104
 block_trans[block_trans$initial_block == "Buprenorphine", "to_housing_meds_cycle104"] <- 1
-block_trans[block_trans$initial_block == "Buprenorphine", "to_housing_nomeds_cycle104"] <- 0
 block_trans[block_trans$initial_block == "Buprenorphine", "to_corresponding_post_trt_cycle104"] <- 0
 
 block_trans[block_trans$initial_block == "Buprenorphine", "to_Buprenorphine_cycle104"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Buprenorphine", 45:54]))
+(rowSums(block_trans[block_trans$initial_block == "Buprenorphine", 41:49]))
 
 
 ## Naltrexone
@@ -838,39 +788,36 @@ block_trans[block_trans$initial_block == "Buprenorphine", "to_Buprenorphine_cycl
 
 # 53
 block_trans[block_trans$initial_block == "Naltrexone", "to_housing_meds_cycle53"] <- 1
-block_trans[block_trans$initial_block == "Naltrexone", "to_housing_nomeds_cycle53"] <- 0
+
 block_trans[block_trans$initial_block == "Naltrexone", "to_Naltrexone_cycle53"] <- 0
 
 block_trans[block_trans$initial_block == "Naltrexone", "to_corresponding_post_trt_cycle53"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Naltrexone", 15:24]))
+(rowSums(block_trans[block_trans$initial_block == "Naltrexone", 14:22]))
 
 # 56
 block_trans[block_trans$initial_block == "Naltrexone", "to_housing_meds_cycle56"] <- 1
-block_trans[block_trans$initial_block == "Naltrexone", "to_housing_nomeds_cycle56"] <- 0
 block_trans[block_trans$initial_block == "Naltrexone", "to_corresponding_post_trt_cycle56"] <- 0
 
 block_trans[block_trans$initial_block == "Naltrexone", "to_Naltrexone_cycle56"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Naltrexone", 25:34]))
+(rowSums(block_trans[block_trans$initial_block == "Naltrexone", 23:31]))
 
 # 65
 block_trans[block_trans$initial_block == "Naltrexone", "to_housing_meds_cycle65"] <- 1
-block_trans[block_trans$initial_block == "Naltrexone", "to_housing_nomeds_cycle65"] <- 0
 block_trans[block_trans$initial_block == "Naltrexone", "to_corresponding_post_trt_cycle65"] <- 0
 
 block_trans[block_trans$initial_block == "Naltrexone", "to_Naltrexone_cycle65"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Naltrexone", 35:44]))
+(rowSums(block_trans[block_trans$initial_block == "Naltrexone", 32:40]))
 
 # 104
 block_trans[block_trans$initial_block == "Naltrexone", "to_housing_meds_cycle104"] <- 1
-block_trans[block_trans$initial_block == "Naltrexone", "to_housing_nomeds_cycle104"] <- 0
 block_trans[block_trans$initial_block == "Naltrexone", "to_corresponding_post_trt_cycle104"] <- 0
 
 block_trans[block_trans$initial_block == "Naltrexone", "to_Naltrexone_cycle104"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Naltrexone", 45:54]))
+(rowSums(block_trans[block_trans$initial_block == "Naltrexone", 41:49]))
 
 ## Methadone
 
@@ -879,39 +826,36 @@ block_trans[block_trans$initial_block == "Naltrexone", "to_Naltrexone_cycle104"]
 
 # 53
 block_trans[block_trans$initial_block == "Methadone", "to_housing_meds_cycle53"] <- 1
-block_trans[block_trans$initial_block == "Methadone", "to_housing_nomeds_cycle53"] <- 0
+
 block_trans[block_trans$initial_block == "Methadone", "to_Methadone_cycle53"] <- 0
 
 block_trans[block_trans$initial_block == "Methadone", "to_corresponding_post_trt_cycle53"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Methadone", 15:24]))
+(rowSums(block_trans[block_trans$initial_block == "Methadone", 14:22]))
 
 # 56
 block_trans[block_trans$initial_block == "Methadone", "to_housing_meds_cycle56"] <- 1
-block_trans[block_trans$initial_block == "Methadone", "to_housing_nomeds_cycle53"] <- 0
 block_trans[block_trans$initial_block == "Methadone", "to_corresponding_post_trt_cycle56"] <- 0
 
 block_trans[block_trans$initial_block == "Methadone", "to_Methadone_cycle56"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Methadone", 25:34]))
+(rowSums(block_trans[block_trans$initial_block == "Methadone", 23:31]))
 
 # 65
 block_trans[block_trans$initial_block == "Methadone", "to_housing_meds_cycle65"] <- 1
-block_trans[block_trans$initial_block == "Methadone", "to_housing_nomeds_cycle65"] <- 0
 block_trans[block_trans$initial_block == "Methadone", "to_corresponding_post_trt_cycle65"] <- 0
 
 block_trans[block_trans$initial_block == "Methadone", "to_Methadone_cycle65"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Methadone", 35:44]))
+(rowSums(block_trans[block_trans$initial_block == "Methadone", 32:40]))
 
 # 104
 block_trans[block_trans$initial_block == "Methadone", "to_housing_meds_cycle104"] <- 1
-block_trans[block_trans$initial_block == "Methadone", "to_housing_nomeds_cycle104"] <- 0
 block_trans[block_trans$initial_block == "Methadone", "to_corresponding_post_trt_cycle104"] <- 0
 
 block_trans[block_trans$initial_block == "Methadone", "to_Methadone_cycle104"] <- 0
 
-(rowSums(block_trans[block_trans$initial_block == "Methadone", 45:54]))
+(rowSums(block_trans[block_trans$initial_block == "Methadone", 41:49]))
 
 ## Corrections
 
@@ -942,7 +886,7 @@ block_trans[block_trans$initial_block == "section", "to_section_cycle52"] <- 0
 block_trans[block_trans$initial_block == "section", "to_No_Treatment_cycle52"] <- 1
 
 # 53: sweep week
-block_trans[block_trans$initial_block == "section", "to_No_Treatment_cycle53"] <- 1
+block_trans[block_trans$initial_block == "section", "to_section_cycle53"] <- 1
 
 # 56
 block_trans[block_trans$initial_block == "section", "to_corresponding_post_trt_cycle56"] <- 0
@@ -981,15 +925,15 @@ block_trans[block_trans$initial_block == "diaspora", "to_diaspora_cycle53"] <- 1
 
 # 56: 3 weeks post-sweep
 block_trans[block_trans$initial_block == "diaspora", "to_corresponding_post_trt_cycle56"] <- 1
-block_trans[block_trans$initial_block == "diaspora", "to_No_Treatment_cycle56"] <- 0
+block_trans[block_trans$initial_block == "diaspora", "to_diaspora_cycle56"] <- 0
 
 # 65: 3 months post-sweep
 block_trans[block_trans$initial_block == "diaspora", "to_corresponding_post_trt_cycle65"] <- 1
-block_trans[block_trans$initial_block == "diaspora", "to_No_Treatment_cycle65"] <- 0
+block_trans[block_trans$initial_block == "diaspora", "to_diaspora_cycle65"] <- 0
 
 # 104: 9 months post-sweep
 block_trans[block_trans$initial_block == "diaspora", "to_corresponding_post_trt_cycle104"] <- 1
-block_trans[block_trans$initial_block == "diaspora", "to_No_Treatment_cycle104"] <- 0
+block_trans[block_trans$initial_block == "diaspora", "to_diaspora_cycle104"] <- 0
 
 
 ## housing_meds
@@ -1002,69 +946,28 @@ block_trans[block_trans$initial_block == "housing_meds", "to_No_Treatment_cycle5
 block_trans[block_trans$initial_block == "housing_meds", "to_housing_meds_cycle53"] <- 1
 
 # 56
-block_trans[block_trans$initial_block == "housing_meds", "to_corresponding_post_trt_cycle56"] <- 0.000911
 block_trans[block_trans$initial_block == "housing_meds", "to_housing_meds_cycle56"] <- 
-  1 - block_trans[block_trans$initial_block == "housing_meds", "to_corresponding_post_trt_cycle56"]
+  block_trans[block_trans$initial_block == "Methadone", "to_Methadone_cycle52"]
+block_trans[block_trans$initial_block == "housing_meds", "to_corresponding_post_trt_cycle56"] <-
+  block_trans[block_trans$initial_block == "Methadone", "to_corresponding_post_trt_cycle52"]
 
 # 65: 3 months post
-block_trans[block_trans$initial_block == "housing_meds", "to_corresponding_post_trt_cycle65"] <- 0.000911
 block_trans[block_trans$initial_block == "housing_meds", "to_housing_meds_cycle65"] <- 
-  1 - block_trans[block_trans$initial_block == "housing_meds", "to_corresponding_post_trt_cycle65"]
+  block_trans[block_trans$initial_block == "Methadone", "to_Methadone_cycle52"]
+block_trans[block_trans$initial_block == "housing_meds", "to_corresponding_post_trt_cycle65"] <-
+  block_trans[block_trans$initial_block == "Methadone", "to_corresponding_post_trt_cycle52"]
 
 # 104: 9 months post
-block_trans[block_trans$initial_block == "housing_meds", "to_corresponding_post_trt_cycle104"] <- 0.000911
 block_trans[block_trans$initial_block == "housing_meds", "to_housing_meds_cycle104"] <- 
-  1 - block_trans[block_trans$initial_block == "housing_meds", "to_corresponding_post_trt_cycle104"]
-
-## housing_nomeds
-# skip post-state, go right back to No Treatment
-
-# 52: safeguard to keep people out
-block_trans[block_trans$initial_block == "housing_nomeds", "to_housing_nomeds_cycle52"] <- 0
-block_trans[block_trans$initial_block == "housing_nomeds", "to_No_Treatment_cycle52"] <- 1
-
-# 53: housing week
-block_trans[block_trans$initial_block == "housing_nomeds", "to_housing_nomeds_cycle53"] <- 1
-
-# 56
-block_trans[block_trans$initial_block == "housing_nomeds", "to_housing_meds_cycle56"] <- 0.00551707229
-  # math from Jess Taylor's data that 25% of individuals in housing took up mmt within one year
-
-block_trans[block_trans$initial_block == "housing_nomeds", "to_No_Treatment_cycle56"] <- 0.000911
-
-block_trans[block_trans$initial_block == "housing_nomeds", "to_housing_nomeds_cycle56"] <- 
-  (1 - block_trans[block_trans$initial_block == "housing_nomeds", "to_housing_meds_cycle56"]
-   - block_trans[block_trans$initial_block == "housing_nomeds", "to_No_Treatment_cycle56"])
-
-# 65: 3 months post
-block_trans[block_trans$initial_block == "housing_nomeds", "to_housing_meds_cycle65"] <- 0.00551707229
-
-block_trans[block_trans$initial_block == "housing_nomeds", "to_No_Treatment_cycle65"] <- 0.000911
-
-block_trans[block_trans$initial_block == "housing_nomeds", "to_housing_nomeds_cycle65"] <- 
-  (1 - block_trans[block_trans$initial_block == "housing_nomeds", "to_housing_meds_cycle65"]
-   - block_trans[block_trans$initial_block == "housing_nomeds", "to_No_Treatment_cycle65"])
-
-# 104: 9 months post
-block_trans[block_trans$initial_block == "housing_nomeds", "to_housing_meds_cycle104"] <- 0.00551707229
-
-block_trans[block_trans$initial_block == "housing_nomeds", "to_No_Treatment_cycle104"] <- 0.000911
-
-block_trans[block_trans$initial_block == "housing_nomeds", "to_housing_nomeds_cycle104"] <- 
-  (1 - block_trans[block_trans$initial_block == "housing_nomeds", "to_housing_meds_cycle104"]
-   - block_trans[block_trans$initial_block == "housing_nomeds", "to_No_Treatment_cycle104"])
+  block_trans[block_trans$initial_block == "Methadone", "to_Methadone_cycle52"]
+block_trans[block_trans$initial_block == "housing_meds", "to_corresponding_post_trt_cycle104"] <-
+  block_trans[block_trans$initial_block == "Methadone", "to_corresponding_post_trt_cycle52"]
 
 ## post-blocks
 
-# post-housing_nomeds not included in the loop because people don't go there
-block_trans[block_trans$initial_block == "post-housing_nomeds", "to_No_Treatment_cycle52"] <- 1
-block_trans[block_trans$initial_block == "post-housing_nomeds", "to_No_Treatment_cycle53"] <- 1
-block_trans[block_trans$initial_block == "post-housing_nomeds", "to_No_Treatment_cycle56"] <- 1
-block_trans[block_trans$initial_block == "post-housing_nomeds", "to_No_Treatment_cycle65"] <- 1
-block_trans[block_trans$initial_block == "post-housing_nomeds", "to_No_Treatment_cycle104"] <- 1
-
 ## post blocks are easy
 post_blocks <- list("post-housing_meds", "Post-Naltrexone", "Post-Methadone", "Post-Corrections", "Post-Buprenorphine", "post-section", "post-diaspora")
+post_blocks
 
 # iterate through cycles by hand for now
 post_cycle <- 52
@@ -1106,11 +1009,18 @@ for (blocks in post_blocks) {
 block_trans <- block_trans %>%
   select(-to_No_Treatment_cycle156, -to_Buprenorphine_cycle156, -to_Naltrexone_cycle156, -to_Methadone_cycle156, -to_corresponding_post_trt_cycle156)
 
-write.csv(block_trans, paste0("input", input_number, "/block_trans.csv"), row.names = F)
+write.csv(block_trans, paste0(input_folder,'/',"block_trans.csv", sep = ""), row.names = F)
+
+}
 
 ### entering cohort ##########
 
-enter_cohort <- read.csv(paste0("input", input_number, "/entering_cohort.csv"))
+folders <- Sys.glob("input*")
+print(folders)
+
+for (input_folder in folders) {
+  enter_cohort <- read.csv(paste0(input_folder,'/',"entering_cohort.csv"))
+  
 enter_cohort[, c(4)] <- rep(0, length.out = 90)
 
 enter_cohort <- enter_cohort %>%
@@ -1122,11 +1032,17 @@ enter_cohort <- enter_cohort %>%
   filter(agegrp != "14_15") %>%
   filter(agegrp != "16_17")
 
-write.csv(enter_cohort, paste0("input", input_number, "/entering_cohort.csv"), row.names = F)
+write.csv(enter_cohort, paste0(input_folder,'/',"entering_cohort.csv", sep = ""), row.names = F)
+
+}
 
 ### fatal od ##########
 
-fatal_od <- read.csv(paste0("input", input_number, "/fatal_overdose.csv"))
+folders <- Sys.glob("input*")
+print(folders)
+
+for (input_folder in folders) {
+  fatal_od <- read.csv(paste0(input_folder,'/',"fatal_overdose.csv"))
 
 # switch to rate, multiply, then switch back
 updated_fatal_od <- 
@@ -1147,13 +1063,19 @@ fatal_od <- fatal_od %>%
          fatal_to_all_types_overdose_ratio_cycle56, fatal_to_all_types_overdose_ratio_cycle65,
          fatal_to_all_types_overdose_ratio_cycle104)
 
-write.csv(fatal_od, paste0("input", input_number, "/fatal_overdose.csv"), row.names = F)
+write.csv(fatal_od, paste0(input_folder,'/',"fatal_overdose.csv", sep = ""), row.names = F)
+
+}
 
 ### oud trans ##########
 # must sum to 1
 
-oud_trans <- read.csv(paste0("input", input_number, "/oud_trans.csv"))
+folders <- Sys.glob("input*")
+print(folders)
 
+for (input_folder in folders) {
+  oud_trans <- read.csv(paste0(input_folder,'/',"oud_trans.csv"))
+  
 # remove Detox and Post detox
 oud_trans <- oud_trans %>%
   filter(block != "Detox") %>%
@@ -1200,18 +1122,8 @@ p_housing_ot <- oud_trans %>%
 p_housing_ot[, c(5:8)] <- rep(0, length.out = 360)
 p_housing_ot$block <- "post-housing_meds"
 
-housing_nm_ot <- oud_trans %>%
-  filter(block == "No_Treatment")
-housing_nm_ot[, c(5:8)] <- rep(0, length.out = 360)
-housing_nm_ot$block <- "housing_nomeds"
-
-p_housing_nm_ot <- oud_trans %>%
-  filter(block == "No_Treatment")
-p_housing_nm_ot[, c(5:8)] <- rep(0, length.out = 360)
-p_housing_nm_ot$block <- "post-housing_nomeds"
-
 oud_trans <- rbind(oud_trans, corr_ot, p_corr_ot, sect_ot, p_sect_ot, diasp_ot, p_diasp_ot, 
-                   housing_ot, p_housing_ot, housing_nm_ot, p_housing_nm_ot)
+                   housing_ot, p_housing_ot)
 
 # corrections = no treatment
 oud_trans[oud_trans$block == "Corrections", 5:8] <- oud_trans[oud_trans$block == "No_Treatment", 5:8]
@@ -1228,9 +1140,6 @@ oud_trans[oud_trans$block == "diaspora", 5:8] <- oud_trans[oud_trans$block == "N
 # housing_meds = methadone
 oud_trans[oud_trans$block == "housing_meds", 5:8] <- oud_trans[oud_trans$block == "Methadone", 5:8]
 
-# housing_nomeds = no treatment
-oud_trans[oud_trans$block == "housing_nomeds", 5:8] <- oud_trans[oud_trans$block == "No_Treatment", 5:8]
-
 # post-Corrections = post-bup
 oud_trans[oud_trans$block == "Post-Corrections", 5:8] <- oud_trans[oud_trans$block == "Post-Buprenorphine", 5:8]
 
@@ -1243,9 +1152,6 @@ oud_trans[oud_trans$block == "post-diaspora", 5:8] <- oud_trans[oud_trans$block 
 # post-housing_meds = post-mmt
 oud_trans[oud_trans$block == "post-housing_meds", 5:8] <- oud_trans[oud_trans$block == "Post-Methadone", 5:8]
 
-# post-housing_nomeds = no treatment
-oud_trans[oud_trans$block == "post-housing_nomeds", 5:8] <- oud_trans[oud_trans$block == "No_Treatment", 5:8]
-
 problems <- subset(oud_trans, rowSums((oud_trans[, c(5:8)])) != 1)
 problems <- problems %>% mutate(sums = rowSums(problems[, 5:8]))
 
@@ -1253,8 +1159,8 @@ oud_trans <- oud_trans %>%
   arrange(
     factor(block, levels = c(
       "No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section",
-      "diaspora", "housing_meds", "housing_nomeds", "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", 
-      "Post-Corrections", "post-section", "post-diaspora", "post-housing_meds", "post-housing_nomeds"
+      "diaspora", "housing_meds", "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", 
+      "Post-Corrections", "post-section", "post-diaspora", "post-housing_meds"
     )),
     agegrp, desc(sex), factor(initial_status, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection"))
   )
@@ -1265,12 +1171,18 @@ oud_trans <- oud_trans %>%
   filter(agegrp != "14_15") %>%
   filter(agegrp != "16_17")
 
-write.csv(oud_trans, paste0("input", input_number, "/oud_trans.csv"), row.names = F)
+write.csv(oud_trans, paste0(input_folder,'/',"oud_trans.csv", sep = ""), row.names = F)
+
+}
 
 ### SMR ##########
 
-SMR <- read.csv(paste0("input", input_number, "/SMR.csv"))
+folders <- Sys.glob("input*")
+print(folders)
 
+for (input_folder in folders) {
+  SMR <- read.csv(paste0(input_folder,'/',"SMR.csv"))
+  
 # add empty rows to SMR (base)
 corr_smr <- SMR %>%
   filter(block == "No_Treatment")
@@ -1312,19 +1224,9 @@ p_housing_smr <- SMR %>%
 p_housing_smr[, c(5)] <- rep(0, length.out = 360)
 p_housing_smr$block <- "post-housing_meds"
 
-housing_nm_smr <- SMR %>%
-  filter(block == "No_Treatment")
-housing_nm_smr[, c(5)] <- rep(0, length.out = 360)
-housing_nm_smr$block <- "housing_nomeds"
-
-p_housing_nm_smr <- SMR %>%
-  filter(block == "No_Treatment")
-p_housing_nm_smr[, c(5)] <- rep(0, length.out = 360)
-p_housing_nm_smr$block <- "post-housing_nomeds"
-
 SMR <- rbind(SMR, corr_smr, p_corr_smr, sect_smr, p_sect_smr, diasp_smr, 
-             p_diasp_smr, housing_smr, p_housing_smr, housing_nm_smr,
-             p_housing_nm_smr)
+             p_diasp_smr, housing_smr, p_housing_smr)
+
 
 # Corrections
 SMR[SMR$block == "Corrections", "SMR"] <- SMR %>%
@@ -1346,11 +1248,6 @@ SMR[SMR$block == "housing_meds", "SMR"] <- SMR %>%
   filter(block == "Methadone") %>%
   select(SMR)
 
-# housing_nomeds = no treatment
-SMR[SMR$block == "housing_nomeds", "SMR"] <- SMR %>%
-  filter(block == "No_Treatment") %>%
-  select(SMR)
-
 # post-corrections
 SMR[SMR$block == "Post-Corrections", "SMR"] <- SMR %>%
   filter(block == "No_Treatment") %>%
@@ -1369,11 +1266,6 @@ SMR[SMR$block == "post-diaspora", "SMR"] <- SMR %>%
 # post-housing_meds = post-mmt
 SMR[SMR$block == "post-housing_meds", "SMR"] <- SMR %>%
   filter(block == "Post-Methadone") %>%
-  select(SMR)
-
-# post-housing_nomeds = no treatment, will be skipped
-SMR[SMR$block == "post-housing_nomeds", "SMR"] <- SMR %>%
-  filter(block == "No_Treatment") %>%
   select(SMR)
 
 # remove Detox and post-detox
@@ -1399,13 +1291,15 @@ SMR <- SMR %>%
   arrange(
     factor(block, levels = c(
       "No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds",
-      "housing_nomeds", "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections",
-      "post-section", "post-diaspora", "post-housing_meds", "post-housing_nomeds"
+      "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections",
+      "post-section", "post-diaspora", "post-housing_meds"
     )),
     agegrp, desc(sex), factor(oud, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection"))
   )
 
-write.csv(SMR, paste0("input", input_number, "/SMR.csv"), row.names = F)
+write.csv(SMR, paste0(input_folder,'/',"SMR.csv", sep = ""), row.names = F)
+
+}
 
 ###### UTILITIES #############################################################
 
@@ -1415,10 +1309,11 @@ diaspora <- -0.02378
 
 ### background utility ###########
 
-bg_utility <- read.csv(paste0("input", input_number, "/cost_life/bg_utility.csv"))
+folders <- Sys.glob("input*")
+print(folders)
 
-bg_utility$utility <- bg_utility$utility + nonhousing
-  # adjust for not being housed
+for (input_folder in folders) {
+  bg_utility <- read.csv(paste0(input_folder,'/',"cost_life/bg_utility.csv"))
 
 bg_utility <- bg_utility %>%
   filter(agegrp != "10_11") %>%
@@ -1426,11 +1321,17 @@ bg_utility <- bg_utility %>%
   filter(agegrp != "14_15") %>%
   filter(agegrp != "16_17")
 
-write.csv(bg_utility, paste0("input", input_number, "/cost_life/bg_utility.csv"), row.names = F)
+write.csv(bg_utility, paste0(input_folder,'/',"cost_life/bg_utility.csv", sep = ""), row.names = F)
+
+}
 
 ### oud utility ##############
 
-oud_utility <- read.csv(paste0("input", input_number, "/cost_life/oud_utility.csv"))
+folders <- Sys.glob("input*")
+print(folders)
+
+for (input_folder in folders) {
+  oud_utility <- read.csv(paste0(input_folder,'/',"/cost_life/oud_utility.csv"))
 
 corr_out <- oud_utility %>%
   filter(block == "No_Treatment")
@@ -1470,18 +1371,9 @@ p_housing_out <- oud_utility %>%
 p_housing_out$block <- "post-housing_meds"
 p_housing_out$utility <- p_housing_out$utility + nonhousing
 
-housing_nm_out <- oud_utility %>%
-  filter(block == "No_Treatment")
-housing_nm_out$block <- "housing_nomeds"
-
-p_housing_nm_out <- oud_utility %>%
-  filter(block == "No_Treatment")
-p_housing_nm_out$block <- "post-housing_nomeds"
-p_housing_nm_out$utility <- p_housing_nm_out$utility + nonhousing
-
 oud_utility <- oud_utility %>%
   rbind(corr_out, p_corr_out, sect_out, p_sect_out, diasp_out, p_diasp_out,
-        housing_out, p_housing_out, housing_nm_out, p_housing_nm_out)
+        housing_out, p_housing_out)
 
 # housing adjustment
 oud_utility[oud_utility$block == "No_Treatment", "utility"] <- 
@@ -1505,23 +1397,30 @@ oud_utility[oud_utility$block == "Post-Naltrexone", "utility"] <-
 oud_utility[oud_utility$block == "Post-Methadone", "utility"] <- 
   oud_utility[oud_utility$block == "Post-Methadone", "utility"] + nonhousing
 
+
 oud_utility <- oud_utility %>%
   filter(block != "Detox") %>%
   filter(block != "Post-Detox") %>%
   arrange(
     factor(block, levels = c(
       "No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds",
-      "housing_nomeds", "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections", "post-section",
-      "post-diaspora", "post-housing_meds", "post-housing_nomeds")),
+      "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections", "post-section",
+      "post-diaspora", "post-housing_meds")),
     factor(oud, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection"))
   )
 
-write.csv(oud_utility, paste0("input", input_number, "/cost_life/oud_utility.csv"), row.names = F)
+write.csv(oud_utility, paste0(input_folder,'/',"cost_life/oud_utility.csv", sep = ""), row.names = F)
+
+}
 
 ### setting utility ###########
 
-setting_utility <- read.csv(paste0("input", input_number, "/cost_life/setting_utility.csv"))
+folders <- Sys.glob("input*")
+print(folders)
 
+for (input_folder in folders) {
+  setting_utility <- read.csv(paste0(input_folder,'/',"cost_life/setting_utility.csv"))
+  
 # add housing/post
 # UPDATE UTILITY HERE
 setting_utility <- setting_utility %>%
@@ -1540,10 +1439,6 @@ setting_utility <- setting_utility %>%
   add_row(block = "housing_meds",
           utility = 1) %>%
   add_row(block = "post-housing_meds",
-          utility = 1) %>%
-  add_row(block = "housing_nomeds",
-          utility = 1) %>%
-  add_row(block = "post-housing_nomeds",
           utility = 1)
 
 # re-arrange
@@ -1552,24 +1447,38 @@ setting_utility <- setting_utility %>%
   filter(block != "Post-Detox") %>%
   arrange(
     factor(block, levels = c(
-      "No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds", "housing_nomeds",
-      "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections", "post-section", "post-diaspora", "post-housing_meds", "post-housing_nomeds"))
+      "No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds",
+      "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections", "post-section", "post-diaspora", "post-housing_meds"))
   )
 
-write.csv(setting_utility, paste0("input", input_number, "/cost_life/setting_utility.csv"), row.names = F)
+write.csv(setting_utility, paste0(input_folder,'/',"cost_life/setting_utility.csv", sep = ""), row.names = F)
+
+}
 
 ##### COSTS ################################################################
 
 ### overdose cost ############
 
-overdose_cost <- read.csv(paste0("input", input_number, "/cost_life/overdose_cost.csv"))
+folders <- Sys.glob("input*")
+print(folders)
+
+for (input_folder in folders) {
+  overdose_cost <- read.csv(paste0(input_folder,'/',"cost_life/overdose_cost.csv"))
+  
 # it's already correct, don't change anything.
-write.csv(overdose_cost, paste0("input", input_number, "/cost_life/overdose_cost.csv"), row.names = F)
+  
+  write.csv(overdose_cost, paste0(input_folder,'/',"cost_life/overdose_cost.csv", sep = ""), row.names = F)
+  
+}
 
 ### pharmaceutical cost #############
 
-pharmaceutical_cost <- read.csv(paste0("input", input_number, "/cost_life/pharmaceutical_cost.csv"))
+folders <- Sys.glob("input*")
+print(folders)
 
+for (input_folder in folders) {
+  pharmaceutical_cost <- read.csv(paste0(input_folder,'/',"cost_life/pharmaceutical_cost.csv"))
+  
 pharmaceutical_cost <- pharmaceutical_cost %>%
   filter(block != "Detox") %>%
   add_row(block = "Corrections",
@@ -1579,17 +1488,21 @@ pharmaceutical_cost <- pharmaceutical_cost %>%
   add_row(block = "diaspora",
           pharmaceutical_cost_.healthcare_system = 0) %>%
   add_row(block = "housing_meds", pharmaceutical_cost_.healthcare_system = 
-          pharmaceutical_cost[pharmaceutical_cost$block == "Methadone", "pharmaceutical_cost_.healthcare_system"]) %>%
-  add_row(block = "housing_nomeds", 
-          pharmaceutical_cost_.healthcare_system = 0)
+            pharmaceutical_cost[pharmaceutical_cost$block == "Methadone", "pharmaceutical_cost_.healthcare_system"])
   
-write.csv(pharmaceutical_cost, paste0("input", input_number, "/cost_life/pharmaceutical_cost.csv"), row.names = F)
+write.csv(pharmaceutical_cost, paste0(input_folder,'/',"cost_life/pharmaceutical_cost.csv", sep = ""), row.names = F)
+
+}
 
 ### treatment utilization cost ##############
 # ADD HOUSING COST HERE
 
-treatment_utilization_cost <- read.csv(paste0("input", input_number, "/cost_life/treatment_utilization_cost.csv"))
+folders <- Sys.glob("input*")
+print(folders)
 
+for (input_folder in folders) {
+  treatment_utilization_cost <- read.csv(paste0(input_folder,'/',"cost_life/treatment_utilization_cost.csv"))
+  
 treatment_utilization_cost <- treatment_utilization_cost %>%
   add_row(block = "Corrections",
           treatment_utilization_cost_.healthcare_system = 0) %>%
@@ -1598,18 +1511,21 @@ treatment_utilization_cost <- treatment_utilization_cost %>%
   add_row(block = "diaspora",
           treatment_utilization_cost_.healthcare_system = 0) %>%
   add_row(block = "housing_meds",
-          treatment_utilization_cost_.healthcare_system = 416.34) %>% # housing plus methadone
-  add_row(block = "housing_nomeds",
-          treatment_utilization_cost_.healthcare_system = 292.91) %>% # housing
+          treatment_utilization_cost_.healthcare_system = 416.34) %>%
   filter(block != "Detox")
   
-write.csv(treatment_utilization_cost, paste0("input", input_number, "/cost_life/treatment_utilization_cost.csv"), row.names = F)
+write.csv(treatment_utilization_cost, paste0(input_folder,'/',"cost_life/treatment_utilization_cost.csv", sep = ""), row.names = F)
+
+}
 
 ### healthcare utilization ##########
-# UPDATE TO LOWER HC COSTS
 
-healthcare_utilization_cost <- read.csv(paste0("input", input_number, "/cost_life/healthcare_utilization_cost.csv"))
+folders <- Sys.glob("input*")
+print(folders)
 
+for (input_folder in folders) {
+  healthcare_utilization_cost <- read.csv(paste0(input_folder,'/',"cost_life/healthcare_utilization_cost.csv"))
+  
 # add new blocks
 corr_huc <- healthcare_utilization_cost %>%
   filter(block == "No_Treatment")
@@ -1639,40 +1555,25 @@ p_diasp_huc <- healthcare_utilization_cost %>%
 p_diasp_huc$block <- "post-diaspora"
 
 housing_huc <- healthcare_utilization_cost %>%
-  filter(block == "No_Treatment") %>%
-  mutate(new_cost = healthcare_utilization_cost_healthcare_system*0.48488) %>%
-  select(-healthcare_utilization_cost_healthcare_system) %>%
-  rename(healthcare_utilization_cost_healthcare_system = new_cost)
-# housing_huc$healthcare_utilization_cost_healthcare_system <- housing_huc$healthcare_utilization_cost_healthcare_system*0.48488
+  filter(block == "No_Treatment")
+housing_huc$healthcare_utilization_cost_healthcare_system <- housing_huc$healthcare_utilization_cost_healthcare_system*0.48488
 housing_huc$block <- "housing_meds"
 
 p_housing_huc <- healthcare_utilization_cost %>%
   filter(block == "Post-Methadone")
 p_housing_huc$block <- "post-housing_meds"
 
-housing_nm_huc <- healthcare_utilization_cost %>%
-  filter(block == "No_Treatment") %>%
-  mutate(new_cost = healthcare_utilization_cost_healthcare_system*0.48488) %>%
-  select(-healthcare_utilization_cost_healthcare_system) %>%
-  rename(healthcare_utilization_cost_healthcare_system = new_cost)
-# housing_huc$healthcare_utilization_cost_healthcare_system <- housing_huc$healthcare_utilization_cost_healthcare_system*0.48488
-housing_nm_huc$block <- "housing_nomeds"
-
-p_housing_nm_huc <- healthcare_utilization_cost %>%
-  filter(block == "No_Treatment")
-p_housing_nm_huc$block <- "post-housing_nomeds"
-
 healthcare_utilization_cost <- healthcare_utilization_cost %>%
   rbind(corr_huc, p_corr_huc, sect_huc, p_sect_huc, diasp_huc, p_diasp_huc,
-        housing_huc, p_housing_huc, housing_nm_huc, p_housing_nm_huc)
+        housing_huc, p_housing_huc)
 
 healthcare_utilization_cost <- healthcare_utilization_cost %>%
   filter(block != "Detox") %>%
   filter(block != "Post-Detox") %>%
   arrange(
     factor(block, levels = c(
-      "No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds", "housing_nomeds",
-      "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections", "post-section", "post-diaspora", "post-housing_meds", "post-housing_nomeds")),
+      "No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora", "housing_meds",
+      "Post-Buprenorphine", "Post-Naltrexone", "Post-Methadone", "Post-Corrections", "post-section", "post-diaspora", "post-housing_meds")),
     agegrp, desc(sex), 
     factor(oud, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection"))
   )
@@ -1683,7 +1584,8 @@ healthcare_utilization_cost <- healthcare_utilization_cost %>%
   filter(agegrp != "14_15") %>%
   filter(agegrp != "16_17")
 
-write.csv(healthcare_utilization_cost, paste0("input", input_number, "/cost_life/healthcare_utilization_cost.csv"), row.names = F)
+write.csv(healthcare_utilization_cost, paste0(input_folder,'/',"cost_life/healthcare_utilization_cost.csv", sep = ""), row.names = F)
+
+}
 
 ##### READY TO RUN MODEL ####################################################
-

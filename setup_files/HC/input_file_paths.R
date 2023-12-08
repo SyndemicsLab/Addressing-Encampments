@@ -1,6 +1,6 @@
 # input8
 
-input_number <- 6401
+input_number <- 1
 
 initial_cohort_file <<- paste("./input", input_number, "/init_cohort.csv", sep = '')
 entering_cohort_file <<- paste("./input", input_number, "/entering_cohort.csv", sep = '')
