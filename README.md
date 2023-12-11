@@ -57,12 +57,18 @@ Run_SQ.bat
 - This will do a number of things. First it will read the base inputs, update them to reflect the status quo strategy, and populate them into the 'sq_inputs' folder. Then it will update the relevant R files (*user_inputs.R* and *input_file_paths.R*) for each input file. Finally, it will run the RESPOND model and populate the outputs in the 'sq_outputs' folder.
 
 **6. Run the results script to calculate results**
-- Script is called:
-- Script does the following:
-- This is how to run the script: 
+- Navigate to the 'SQ_outputs' folder:
+```
+cd C:\YOURFILEPATH\respond_sweeps_public\SQ_outputs
+```
+- Run the Results script:
+```
+Rscript Results_SQ.R
+```
+This will calculate a number of outcomes and provide the results in CSV form in the output folder.
 
 **7. Repeat steps 5-8 for the other strategies: Sweep, Housing with MOUD Required, and Housing with MOUD Choice**
-- *Run_SQ.bat* will run the Status Quo strategy.
-- *Run_SW.bat* will run the Sweep strategy.
-- *Run_HM.bat* will run the Housing (MOUD Required) strategy.
-- *Run_HC.bat* will run the Housing (MOUD Choice) strategy.
+- *Run_SQ.bat* will run the Status Quo strategy (from the 'ec_base_inputs' folder).
+- *Run_SW.bat* will run the Sweep strategy (from the 'ec_base_inputs' folder).
+- *Run_HM.bat* will run the Housing (MOUD Required) strategy (from the 'ec_base_inputs' folder).
+- *Run_HC.bat* will run the Housing (MOUD Choice) strategy (from the 'ec_base_inputs' folder).
