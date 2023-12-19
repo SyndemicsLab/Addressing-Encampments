@@ -26,9 +26,6 @@ p1 <- ggplot(cost, aes(x = strategy, y = value, fill = cost)) +
   scale_y_continuous(labels = scales::label_dollar(scale_cut = scales::cut_short_scale())) + 
   theme_bw() +
   theme(legend.position = "bottom", legend.justification = .1) + 
-  geom_text(aes(label = scales::label_dollar()(after_stat(y)), group = strategy),
-            stat = "summary", fun = "sum", hjust = .5, vjust = -.3,
-            size = 6) + 
   scale_fill_manual(values = c("darkgrey", colorRampPalette(colors = c("#5DD2E9", "#003866"))(4))) + 
   coord_cartesian(ylim = c(3e6, NA)) + 
   theme(text = element_text(size = 16))
@@ -36,7 +33,8 @@ p1 <- ggplot(cost, aes(x = strategy, y = value, fill = cost)) +
 costTable <- copy(cost)[, value := scales::label_dollar()(value)
                         ][, .("Strategy" = strategy, "Cost Category" = cost, "USD" = value)
                           ][USD != "$0"
-                            ][, Strategy := factor(Strategy, levels = c("Status Quo", "Sweeps", "Housing First", "Housing (MOUD)"))]
+                            ][, Strategy := factor(Strategy, levels = c("Status Quo", "Sweeps", "Housing (MOUD)", "Housing First"), ordered = TRUE)]
+setorder(costTable, Strategy)
 p1 + ggtexttable(costTable, rows = NULL) + plot_layout(widths = c(1.8, 1))
 ggsave("cost.png", width = 16, height = 8)
 # Housing uptake ===============================================================
