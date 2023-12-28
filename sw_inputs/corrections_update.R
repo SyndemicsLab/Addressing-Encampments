@@ -1,7 +1,8 @@
 ### Update Block Transitions from No Trt to Corrections ###
 
-# Last edited 12/28/2023
+# Last edited 09/05/2023
 # Created by Hana Zwick
+# Sweep Strategy
 
 # Corrections values are not calibrated, and must be updated manually. This script
 # does so, running after the main strategy script. It calls a csv with the correct
@@ -9,18 +10,17 @@
 
 library(dplyr)
 
-
 ######################################################################
 
 #### block_trans ####
 
-corrections_new <- read.csv("block_trans_corrections.csv")
-
-folders <- Sys.glob("input*")
-print(folders)
-
-for (input_folder in folders) {
-  block_trans <- read.csv(paste0(input_folder,'/',"block_trans.csv"))
+ corrections_new <- read.csv("block_trans_corrections.csv")
+ 
+ folders <- Sys.glob("input*")
+ print(folders)
+ 
+ for (input_folder in folders) {
+   block_trans <- read.csv(paste0(input_folder,'/',"block_trans.csv"))
 
 # replace values
 
@@ -499,6 +499,8 @@ block_trans[block_trans$initial_block == "No_Treatment" &
 
 block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle53"] <- 
     block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle52"]
+block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle56"] <- 
+    block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle52"]
 block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle65"] <- 
     block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle52"]
 block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle104"] <- 
@@ -519,11 +521,16 @@ block_trans[block_trans$initial_block == "No_Treatment", "to_No_Treatment_cycle5
    - block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle52"])
 
 # 53
-block_trans[block_trans$initial_block == "No_Treatment", "to_No_Treatment_cycle53"] <-
-  (1 - block_trans[block_trans$initial_block == "No_Treatment", "to_Buprenorphine_cycle53"]
-   - block_trans[block_trans$initial_block == "No_Treatment", "to_Naltrexone_cycle53"]
-   - block_trans[block_trans$initial_block == "No_Treatment", "to_Methadone_cycle53"]
+block_trans[block_trans$initial_block == "No_Treatment", "to_diaspora_cycle53"] <-
+  (1 - block_trans[block_trans$initial_block == "No_Treatment", "to_section_cycle53"]
    - block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle53"])
+   
+# 56
+block_trans[block_trans$initial_block == "No_Treatment", "to_No_Treatment_cycle56"] <-
+  (1 - block_trans[block_trans$initial_block == "No_Treatment", "to_Buprenorphine_cycle56"]
+   - block_trans[block_trans$initial_block == "No_Treatment", "to_Naltrexone_cycle56"]
+   - block_trans[block_trans$initial_block == "No_Treatment", "to_Methadone_cycle56"]
+   - block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle56"])
 
 # 65
 block_trans[block_trans$initial_block == "No_Treatment", "to_No_Treatment_cycle65"] <-
@@ -540,10 +547,11 @@ block_trans[block_trans$initial_block == "No_Treatment", "to_No_Treatment_cycle1
    - block_trans[block_trans$initial_block == "No_Treatment", "to_Corrections_cycle104"])
 
 
+# write out block_trans.csv
 write.csv(block_trans, paste0(input_folder,'/',"block_trans.csv", sep = ""), row.names = F)
 
-}
-
+ }
+ 
 ## ***update main scripts to make but not touch corrections***
 
 

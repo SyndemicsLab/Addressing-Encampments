@@ -8,6 +8,8 @@ cd ../sw_inputs
 
 Rscript SW_GitHub.R
 
+Rscript corrections_update.R
+
 Rscript cp_files.R
 
 
