@@ -38,8 +38,11 @@ for (input_folder in folders) {
 # init_cohort <- read.csv(paste0("input", input_number, "/init_cohort.csv"))
 
 init_cohort <- init_cohort %>%
-  filter(block != "Detox",
-         agegrp %ni% c("10_11", "12_13", "14_15", "16_17")) %>%
+  filter(block != "Detox") %>%
+  filter(agegrp != "10_11") %>%
+  filter(agegrp != "12_13") %>%
+  filter(agegrp != "14_15") %>%
+  filter(agegrp != "16_17") %>%
   arrange(
     factor(block, levels = c("No_Treatment", "Buprenorphine", "Naltrexone", "Methadone", "Corrections", "section", "diaspora")),
     agegrp, desc(sex), factor(oud, levels = c("Active_Noninjection", "Active_Injection", "Nonactive_Noninjection", "Nonactive_Injection"))
