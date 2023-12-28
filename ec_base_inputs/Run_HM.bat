@@ -8,6 +8,8 @@ cd ../hm_inputs
 
 Rscript HM_GitHub.R
 
+Rscript corrections_update.R
+
 Rscript cp_files.R
 
 
