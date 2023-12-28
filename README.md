@@ -22,7 +22,7 @@ git clone https://github.com/SyndemicsLab/respond_sweeps_public.git
 ```
 - Press **Enter** to create your local clone.
 
-**2. Clone the RESPONDv1 repository in the same place**
+**2. Clone the RESPONDv1 repository into the newly made Sweeps Repository**
 Follow the same instructions as #1, with the RESPONDv1 repository.
 ```
 git clone https://github.com/SyndemicsLab/RESPONDv1.git
