@@ -10,13 +10,13 @@
 
 
 
-`%ni%` <- Negate(`%in%`)
-filter_input <- function(data){
-  out <- data %>% 
-    filter(block %ni% c("Detox", "Post-Detox"),
-           agegrp %ni% c("10_11", "12_13", "14_15", "16_17"))
-  out
-}
+# `%ni%` <- Negate(`%in%`)
+# filter_input <- function(data){
+#   out <- data %>% 
+#     filter(block %ni% c("Detox", "Post-Detox"),
+#            agegrp %ni% c("10_11", "12_13", "14_15", "16_17"))
+#   out
+# }
 
 # getwd()
 
