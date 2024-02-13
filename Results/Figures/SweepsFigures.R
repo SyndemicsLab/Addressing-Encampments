@@ -1,4 +1,4 @@
-if(!require(pacman)) install.packages("pacman"); pacman::p_load(data.table, ggplot2, patchwork, ggpubr)
+if(!require(pacman)) install.packages("pacman"); pacman::p_load(data.table, ggplot2, patchwork, ggpubr, wesanderson)
 
 # Cost =========================================================================
 cost <- fread("cost.csv")
@@ -26,10 +26,10 @@ p1 <- ggplot(cost, aes(x = strategy, y = value, fill = cost)) +
   scale_y_continuous(labels = scales::label_dollar(scale_cut = scales::cut_short_scale())) + 
   theme_bw() +
   theme(legend.position = "bottom", legend.justification = .1) + 
-  scale_fill_manual(values = c("darkgrey", colorRampPalette(colors = c("#5DD2E9", "#003866"))(4))) + 
+  scale_fill_manual(values = c("red", "#F38D3A", "#2A9D8F", "#60AFFF", "#264653")) + 
   coord_cartesian(ylim = c(3e6, NA)) + 
   theme(text = element_text(size = 16))
-
+p1
 costTable <- copy(cost)[, value := scales::label_dollar()(value)
                         ][, .("Strategy" = strategy, "Cost Category" = cost, "USD" = value)
                           ][USD != "$0"
@@ -37,6 +37,9 @@ costTable <- copy(cost)[, value := scales::label_dollar()(value)
 setorder(costTable, Strategy)
 p1 + ggtexttable(costTable, rows = NULL) + plot_layout(widths = c(1.8, 1))
 ggsave("cost.png", width = 16, height = 8)
+
+p1+coord_flip()
+ggsave("cost_notbl.png")
 # Housing uptake ===============================================================
 uptake <- fread("housing_uptake.csv")
 
