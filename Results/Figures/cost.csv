@@ -1,21 +1,25 @@
 cost,strategy,value
 Healthcare Utilization Cost,Housing First,3845847
 Pharmaceutical (MOUD) Cost,Housing First,21625
-Treatment Utilization Cost,Housing First,4873430
+Treatment Utilization Cost,Housing First,621707
 Overdose Cost,Housing First,65396
 Sweep Cost,Housing First,0
+Housing Cost,Housing First,4251723
 Healthcare Utilization Cost,Housing (MOUD),5890276
 Pharmaceutical (MOUD) Cost,Housing (MOUD),13155
-Treatment Utilization Cost,Housing (MOUD),1270773
+Treatment Utilization Cost,Housing (MOUD),377123
 Overdose Cost,Housing (MOUD),74113
 Sweep Cost,Housing (MOUD),0
+Housing Cost,Housing (MOUD),893650
 Healthcare Utilization Cost,Sweeps,6274135
 Pharmaceutical (MOUD) Cost,Sweeps,88867
 Treatment Utilization Cost,Sweeps,368037
 Overdose Cost,Sweeps,74386
 Sweep Cost,Sweeps,109980
+Housing Cost,Sweeps,0
 Healthcare Utilization Cost,Status Quo,6135139
 Pharmaceutical (MOUD) Cost,Status Quo,144269
 Treatment Utilization Cost,Status Quo,232765
 Overdose Cost,Status Quo,70717
 Sweep Cost,Status Quo,0
+Housing Cost,Status Quo,0

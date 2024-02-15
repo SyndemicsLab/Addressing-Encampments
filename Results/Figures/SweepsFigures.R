@@ -26,7 +26,7 @@ p1 <- ggplot(cost, aes(x = strategy, y = value, fill = cost)) +
   scale_y_continuous(labels = scales::label_dollar(scale_cut = scales::cut_short_scale())) + 
   theme_bw() +
   theme(legend.position = "bottom", legend.justification = .1) + 
-  scale_fill_manual(values = c("red", "#F38D3A", "#2A9D8F", "#60AFFF", "#264653")) + 
+  scale_fill_manual(values = c("red", "#F38D3A", "#2A9D8F", "#60AFFF", "#E5BEED", "#264653")) + 
   coord_cartesian(ylim = c(3e6, NA)) + 
   theme(text = element_text(size = 16))
 p1
@@ -39,7 +39,7 @@ p1 + ggtexttable(costTable, rows = NULL) + plot_layout(widths = c(1.8, 1))
 ggsave("cost.png", width = 16, height = 8)
 
 p1+coord_flip()
-ggsave("cost_notbl.png")
+ggsave("cost_notbl.png", width = 10)
 # Housing uptake ===============================================================
 uptake <- fread("housing_uptake.csv")
 
