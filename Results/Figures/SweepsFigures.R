@@ -11,7 +11,7 @@ cost_order <- cost[strategy == "Housing (MOUD)", .(cost, value)] |>
 strat_order <- copy(cost)[, value := sum(value), by = "strategy"
                     ][, .(strategy, value)] |>
   tibble::deframe() |>
-  sort(decreasing = FALSE) |>
+  sort(decreasing = TRUE) |>
   names() |>
   unique()
 
@@ -46,8 +46,7 @@ ggplot(cost, aes(value, strategy, fill = cost)) +
   scale_x_continuous(labels = scales::label_dollar(scale_cut = scales::cut_short_scale())) + 
   theme_bw() +
   theme(legend.position = "bottom", legend.justification = .1) + 
-  scale_fill_manual(values = c("red", "#F38D3A", "#2A9D8F", "#60AFFF", "#E5BEED", "#264653")) + 
-  coord_cartesian(xlim = c(3e6, NA)) + 
+  scale_fill_manual(values = c("red", "#F38D3A", "#2A9D8F", "#60AFFF", "#E5BEED", "#264653")) +
   theme(text = element_text(size = 16))
 
 ggsave("cost_notbl.png", width = 10)
