@@ -1,4 +1,4 @@
-if(!require(pacman)) install.packages("pacman"); pacman::p_load(data.table, ggplot2, patchwork, ggpubr, wesanderson)
+if(!require(pacman)) install.packages("pacman"); pacman::p_load(data.table, ggplot2, patchwork, ggpubr, wesanderson, svglite)
 
 # Cost =========================================================================
 cost <- fread("cost.csv")
@@ -36,7 +36,7 @@ costTable <- copy(cost)[, value := scales::label_dollar()(value)
                             ][, Strategy := factor(Strategy, levels = c("Status Quo", "Sweeps", "Housing (MOUD)", "Housing First"), ordered = TRUE)]
 setorder(costTable, Strategy)
 p1 + ggtexttable(costTable, rows = NULL) + plot_layout(widths = c(1.8, 1))
-ggsave("cost.png", width = 16, height = 8)
+ggsave("cost.svg", width = 16, height = 8)
 
 ggplot(cost, aes(value, strategy, fill = cost)) + 
   geom_col(position = "stack") + 
@@ -49,7 +49,7 @@ ggplot(cost, aes(value, strategy, fill = cost)) +
   scale_fill_manual(values = c("red", "#F38D3A", "#2A9D8F", "#60AFFF", "#E5BEED", "#264653")) +
   theme(text = element_text(size = 16))
 
-ggsave("cost_notbl.png", width = 10)
+ggsave("cost_notbl.svg", width = 10)
 # Housing uptake ===============================================================
 uptake <- fread("housing_uptake.csv")
 
@@ -63,7 +63,7 @@ ggplot(uptake, aes(x = housing_uptake, y = value, col = strategy)) +
   theme(legend.position = "bottom",
         text = element_text(size = 16)) +
   scale_color_manual(values = c("#59CD90", "#3FA7D6","#773344", "#EF452E"))
-ggsave("housing_uptake.png", height = 4, width = 10)
+ggsave("housing_uptake.svg", height = 4, width = 10)
 # Overdose Rate ================================================================
 od <- fread("od_rate.csv")
 
@@ -78,4 +78,4 @@ ggplot(od, aes(x = od_rate_mult, y = value, col = strategy)) +
         text = element_text(size = 16)) + 
   scale_color_manual(values = c("#59CD90", "#3FA7D6","#773344", "#EF452E")) + 
   scale_x_continuous(breaks = seq(0, 3, by = .5))
-ggsave("od_rate.png", height = 4, width = 10)  
+ggsave("od_rate.svg", height = 4, width = 10)  
