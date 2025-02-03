@@ -21,9 +21,9 @@ cost <- cost[, `:=` (cost = factor(cost, levels = cost_order, ordered = TRUE),
 p1 <- ggplot(cost, aes(x = strategy, y = value, fill = cost)) + 
   geom_col(position = "stack") + 
   labs(x = "",
-       y = "Cost (Thousands USD)",
+       y = "Cost, in millions USD",
        fill = "") + 
-  scale_y_continuous(labels = scales::label_dollar(scale = 1e-3, suffix = "k")) +
+  scale_y_continuous(labels = scales::label_dollar(scale = 1e-6)) +
   theme_bw() +
   theme(legend.position = "bottom", legend.justification = .1) + 
   scale_fill_manual(values = c("red", "#F38D3A", "#2A9D8F", "#60AFFF", "#B6A39E", "#773344")) + 
