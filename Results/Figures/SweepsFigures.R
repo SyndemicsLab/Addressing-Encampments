@@ -21,14 +21,15 @@ cost <- cost[, `:=` (cost = factor(cost, levels = cost_order, ordered = TRUE),
 p1 <- ggplot(cost, aes(x = strategy, y = value, fill = cost)) + 
   geom_col(position = "stack") + 
   labs(x = "",
-       y = "Cost (Millions USD)",
+       y = "Cost (Thousands USD)",
        fill = "") + 
-  scale_y_continuous(labels = scales::label_dollar(scale_cut = scales::cut_short_scale())) + 
+  scale_y_continuous(labels = scales::label_dollar(scale = 1e-3, suffix = "k")) +
   theme_bw() +
   theme(legend.position = "bottom", legend.justification = .1) + 
-  scale_fill_manual(values = c("red", "#F38D3A", "#2A9D8F", "#60AFFF", "#E5BEED", "#264653")) + 
+  scale_fill_manual(values = c("red", "#F38D3A", "#2A9D8F", "#60AFFF", "#B6A39E", "#773344")) + 
   coord_cartesian(ylim = c(3e6, NA)) + 
   theme(text = element_text(size = 16))
+ggsave("cost_notbl.svg", p1)
 
 costTable <- copy(cost)[, value := scales::label_dollar()(value)
                         ][, .("Strategy" = strategy, "Cost Category" = cost, "USD" = value)
@@ -37,19 +38,6 @@ costTable <- copy(cost)[, value := scales::label_dollar()(value)
 setorder(costTable, Strategy)
 p1 + ggtexttable(costTable, rows = NULL) + plot_layout(widths = c(1.8, 1))
 ggsave("cost.svg", width = 16, height = 8)
-
-ggplot(cost, aes(value, strategy, fill = cost)) + 
-  geom_col(position = "stack") + 
-  labs(y = "",
-       x = "Cost (Millions USD)",
-       fill = "") + 
-  scale_x_continuous(labels = scales::label_dollar(scale_cut = scales::cut_short_scale())) + 
-  theme_bw() +
-  theme(legend.position = "bottom", legend.justification = .1) + 
-  scale_fill_manual(values = c("red", "#F38D3A", "#2A9D8F", "#60AFFF", "#E5BEED", "#264653")) +
-  theme(text = element_text(size = 16))
-
-ggsave("cost_notbl.svg", width = 10)
 # Housing uptake ===============================================================
 uptake <- fread("housing_uptake.csv")
 
