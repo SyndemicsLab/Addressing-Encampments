@@ -102,7 +102,7 @@
 <text x='582.13' y='205.45' text-anchor='middle' style='font-size: 12.80px;fill: #4D4D4D; font-family: "Arial";' textLength='17.78px' lengthAdjust='spacingAndGlyphs'>2.5</text>
 <text x='683.97' y='205.45' text-anchor='middle' style='font-size: 12.80px;fill: #4D4D4D; font-family: "Arial";' textLength='17.78px' lengthAdjust='spacingAndGlyphs'>3.0</text>
 <text x='378.46' y='222.51' text-anchor='middle' style='font-size: 16.00px; font-family: "Arial";' textLength='262.32px' lengthAdjust='spacingAndGlyphs'>Multiplier for Default Overdose Rates</text>
-<text x='378.46' y='239.79' text-anchor='middle' style='font-size: 16.00px; font-family: "Arial";' textLength='123.61px' lengthAdjust='spacingAndGlyphs'>(in Housing Only)</text>
+<text x='378.46' y='239.79' text-anchor='middle' style='font-size: 16.00px; font-family: "Arial";' textLength='190.34px' lengthAdjust='spacingAndGlyphs'>Among Housed Individuals</text>
 <text transform='translate(16.96,98.41) rotate(-90)' text-anchor='middle' style='font-size: 16.00px; font-family: "Arial";' textLength='117.38px' lengthAdjust='spacingAndGlyphs'>Fatal Overdoses</text>
 <rect x='150.44' y='254.28' width='456.03' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='161.40' y='259.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
