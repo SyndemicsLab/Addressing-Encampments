@@ -22,14 +22,16 @@ p1 <- ggplot(cost, aes(x = strategy, y = value, fill = cost)) +
   geom_col(position = "stack") + 
   labs(x = "",
        y = "Cost, in millions USD",
-       fill = "") + 
+       fill = "",
+       title = "Figure 2. Cost of Strategies by Category", 
+       subtitle = "(1-year Time Horizon)") + 
   scale_y_continuous(labels = scales::label_dollar(scale = 1e-6)) +
   theme_bw() +
   theme(legend.position = "bottom", legend.justification = .1) + 
   scale_fill_manual(values = c("red", "#F38D3A", "#2A9D8F", "#60AFFF", "#B6A39E", "#773344")) + 
   coord_cartesian(ylim = c(3e6, NA)) + 
   theme(text = element_text(size = 16))
-ggsave("cost_notbl.svg", p1)
+ggsave("cost_notbl.svg", height = 5, width = 9)
 
 costTable <- copy(cost)[, value := scales::label_dollar()(value)
                         ][, .("Strategy" = strategy, "Cost Category" = cost, "USD" = value)
@@ -61,7 +63,9 @@ ggplot(od, aes(x = od_rate_mult, y = value, col = strategy)) +
   theme_bw() + 
   labs(x = "Multiplier for Default Overdose Rates\n(in Housing Only)",
        y = "Fatal Overdoses",
-       col = "") + 
+       col = "",
+       title = "Figure 3. Fatal Overdoses by Strategy and Housing Overdose Multiplier",
+       subtitle = "(Applied to Both Housing Strategies)") + 
   theme(legend.position = "bottom",
         text = element_text(size = 16)) + 
   scale_color_manual(values = c("#59CD90", "#3FA7D6","#773344", "#EF452E")) + 
