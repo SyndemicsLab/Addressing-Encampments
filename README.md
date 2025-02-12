@@ -21,7 +21,7 @@ https://www.syndemicslab.org/respond
 - Open Git Bash, and navigate the working directory to the location where you want the cloned directory.
 - Type *git clone*, and then paste the URL you copied earlier.  
 ```
-git clone https://github.com/SyndemicsLab/respond_sweeps_public.git
+git clone https://github.com/SyndemicsLab/Addressing-Encampments.git
 ```
 - Press **Enter** to create your local clone.
 
@@ -36,9 +36,9 @@ git clone https://github.com/SyndemicsLab/RESPONDv1.git
 - For Windows, open Command Prompt as an administrator. For Unix,
 - Navigate to the 'ec_base_inputs' folder.
 ```
-cd C:\YOURFILEPATH\respond_sweeps_public\ec_base_inputs
+cd C:\YOURFILEPATH\Addressing-Encampments\ec_base_inputs
 ```
-- Run *buildbase.bat* using the following command. This will create 1,000 input sets and copy them into 'respond_sweeps_public/ec_base_inputs'.
+- Run *buildbase.bat* using the following command. This will create 1,000 input sets and copy them into 'Addressing-Encampments/ec_base_inputs'.
 ```
 buildbase.bat
 ```
@@ -62,7 +62,7 @@ Run_SQ.bat
 **6. Run the results script to calculate results**
 - Navigate to the 'SQ_outputs' folder:
 ```
-cd C:\YOURFILEPATH\respond_sweeps_public\SQ_outputs
+cd C:\YOURFILEPATH\Addressing-Encampments\SQ_outputs
 ```
 - Run the Results script:
 ```
