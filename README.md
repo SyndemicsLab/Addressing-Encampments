@@ -1,4 +1,5 @@
 # Welcome to the RESPOND Sweeps Project
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0) ![GitHub Release](https://img.shields.io/github/v/release/SyndemicsLab/Addressing-Encampments)
 
 ## Introduction
 Titled "Mortality and Economic Impact of a Police Sweep on People Who are Unsheltered and Who Use Opioids" and colloquially called "Sweeps", this project uses the RESPOND model to model the mortality and health-economic impacts of a street sweep on a cohort of individuals who are unhoused and use opioids.
