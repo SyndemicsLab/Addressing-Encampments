@@ -4,7 +4,9 @@
 Titled "Mortality and Economic Impact of a Police Sweep on People Who are Unsheltered and Who Use Opioids" and colloquially called "Sweeps", this project uses the RESPOND model to model the mortality and health-economic impacts of a street sweep on a cohort of individuals who are unhoused and use opioids.
 
 ## RESPOND Model
-Brief description, point to RESPOND v1 repository
+RESPOND (Researching Effective Strategies to Prevent Opioid Death) is a population-based state transition model that simulates a population with opioid use disorder (OUD), with characteristics including the natural history of OUD, movement on to and off medication for opioid use disorder (MOUD) and with outcomes such as overdose and cost. The model can be used to evaluate the effectiveness and cost-effectiveness of different strategies for offering MOUD, and is informed by data from the Massachusetts Public Health Data Warehouse, clinical trials, and national insurance claims data. We calibrated the model using Massachusetts-specific estimates of disease prevalence, admissions to treatment facilities, and overdose deaths. To learn more about the model and view our figures and user guide check out our Model Materials.
+
+https://www.syndemicslab.org/respond
 
 ## Dependencies
 **R**
