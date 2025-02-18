@@ -119,25 +119,25 @@
 <text x='439.48' y='205.79' text-anchor='middle' style='font-size: 12.80px;fill: #4D4D4D; font-family: "Arial";' textLength='17.78px' lengthAdjust='spacingAndGlyphs'>0.3</text>
 <text x='561.72' y='205.79' text-anchor='middle' style='font-size: 12.80px;fill: #4D4D4D; font-family: "Arial";' textLength='17.78px' lengthAdjust='spacingAndGlyphs'>0.4</text>
 <text x='683.96' y='205.79' text-anchor='middle' style='font-size: 12.80px;fill: #4D4D4D; font-family: "Arial";' textLength='17.78px' lengthAdjust='spacingAndGlyphs'>0.5</text>
-<text x='378.36' y='222.67' text-anchor='middle' style='font-size: 16.00px; font-family: "Arial";' textLength='143.20px' lengthAdjust='spacingAndGlyphs'>Proportion taking up</text>
-<text x='378.36' y='239.95' text-anchor='middle' style='font-size: 16.00px; font-family: "Arial";' textLength='272.71px' lengthAdjust='spacingAndGlyphs'>'Housing (MOUD)' from 'No Treatment'</text>
+<text x='378.36' y='222.67' text-anchor='middle' style='font-size: 16.00px; font-family: "Arial";' textLength='270.37px' lengthAdjust='spacingAndGlyphs'>Proportion of Encampment Population</text>
+<text x='378.36' y='239.95' text-anchor='middle' style='font-size: 16.00px; font-family: "Arial";' textLength='401.05px' lengthAdjust='spacingAndGlyphs'>Accepting Housing with MOUD at the Time of the Sweep</text>
 <text transform='translate(16.93,98.59) rotate(-90)' text-anchor='middle' style='font-size: 16.00px; font-family: "Arial";' textLength='72.92px' lengthAdjust='spacingAndGlyphs'>All Deaths</text>
-<rect x='140.41' y='254.28' width='475.90' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<rect x='153.86' y='259.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='155.59' y1='268.40' x2='169.41' y2='268.40' style='stroke-width: 1.07; stroke: #59CD90; stroke-linecap: butt;' />
-<circle cx='162.50' cy='268.40' r='1.95' style='stroke-width: 0.71; stroke: #59CD90; stroke-opacity: 0.50; fill: #59CD90; fill-opacity: 0.50;' />
-<rect x='340.65' y='259.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='342.38' y1='268.40' x2='356.20' y2='268.40' style='stroke-width: 1.07; stroke: #3FA7D6; stroke-linecap: butt;' />
-<circle cx='349.29' cy='268.40' r='1.95' style='stroke-width: 0.71; stroke: #3FA7D6; stroke-opacity: 0.50; fill: #3FA7D6; fill-opacity: 0.50;' />
-<rect x='449.24' y='259.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='450.97' y1='268.40' x2='464.79' y2='268.40' style='stroke-width: 1.07; stroke: #773344; stroke-linecap: butt;' />
-<circle cx='457.88' cy='268.40' r='1.95' style='stroke-width: 0.71; stroke: #773344; stroke-opacity: 0.50; fill: #773344; fill-opacity: 0.50;' />
-<rect x='546.47' y='259.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='548.20' y1='268.40' x2='562.02' y2='268.40' style='stroke-width: 1.07; stroke: #EF452E; stroke-linecap: butt;' />
-<circle cx='555.11' cy='268.40' r='1.95' style='stroke-width: 0.71; stroke: #EF452E; stroke-opacity: 0.50; fill: #EF452E; fill-opacity: 0.50;' />
-<text x='179.11' y='272.98' style='font-size: 12.80px; font-family: "Arial";' textLength='153.57px' lengthAdjust='spacingAndGlyphs'>Housing (MOUD Required)</text>
+<rect x='150.38' y='254.28' width='455.97' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='161.33' y='259.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='163.06' y1='268.40' x2='176.89' y2='268.40' style='stroke-width: 1.07; stroke: #59CD90; stroke-linecap: butt;' />
+<circle cx='169.97' cy='268.40' r='1.95' style='stroke-width: 0.71; stroke: #59CD90; stroke-opacity: 0.50; fill: #59CD90; fill-opacity: 0.50;' />
+<rect x='343.14' y='259.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='344.87' y1='268.40' x2='358.69' y2='268.40' style='stroke-width: 1.07; stroke: #3FA7D6; stroke-linecap: butt;' />
+<circle cx='351.78' cy='268.40' r='1.95' style='stroke-width: 0.71; stroke: #3FA7D6; stroke-opacity: 0.50; fill: #3FA7D6; fill-opacity: 0.50;' />
+<rect x='446.75' y='259.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='448.48' y1='268.40' x2='462.30' y2='268.40' style='stroke-width: 1.07; stroke: #773344; stroke-linecap: butt;' />
+<circle cx='455.39' cy='268.40' r='1.95' style='stroke-width: 0.71; stroke: #773344; stroke-opacity: 0.50; fill: #773344; fill-opacity: 0.50;' />
+<rect x='539.00' y='259.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='540.73' y1='268.40' x2='554.55' y2='268.40' style='stroke-width: 1.07; stroke: #EF452E; stroke-linecap: butt;' />
+<circle cx='547.64' cy='268.40' r='1.95' style='stroke-width: 0.71; stroke: #EF452E; stroke-opacity: 0.50; fill: #EF452E; fill-opacity: 0.50;' />
+<text x='184.09' y='272.98' style='font-size: 12.80px; font-family: "Arial";' textLength='153.57px' lengthAdjust='spacingAndGlyphs'>Housing (MOUD Required)</text>
 <text x='365.90' y='272.98' style='font-size: 12.80px; font-family: "Arial";' textLength='75.37px' lengthAdjust='spacingAndGlyphs'>Housing First</text>
-<text x='474.49' y='272.98' style='font-size: 12.80px; font-family: "Arial";' textLength='64.01px' lengthAdjust='spacingAndGlyphs'>Status Quo</text>
-<text x='571.72' y='272.98' style='font-size: 12.80px; font-family: "Arial";' textLength='39.11px' lengthAdjust='spacingAndGlyphs'>Sweep</text>
+<text x='469.51' y='272.98' style='font-size: 12.80px; font-family: "Arial";' textLength='64.01px' lengthAdjust='spacingAndGlyphs'>Status Quo</text>
+<text x='561.76' y='272.98' style='font-size: 12.80px; font-family: "Arial";' textLength='39.11px' lengthAdjust='spacingAndGlyphs'>Sweep</text>
 </g>
 </svg>
