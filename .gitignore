@@ -1,2 +1,3 @@
-
+# garbage files from MacOS
+*.DS_Store
 Results/Figures/.Rhistory

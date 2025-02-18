@@ -1,10 +1,13 @@
 # Welcome to the RESPOND Sweeps Project
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0) ![GitHub Release](https://img.shields.io/github/v/release/SyndemicsLab/Addressing-Encampments)
 
 ## Introduction
 Titled "Mortality and Economic Impact of a Police Sweep on People Who are Unsheltered and Who Use Opioids" and colloquially called "Sweeps", this project uses the RESPOND model to model the mortality and health-economic impacts of a street sweep on a cohort of individuals who are unhoused and use opioids.
 
 ## RESPOND Model
-Brief description, point to RESPOND v1 repository
+RESPOND (Researching Effective Strategies to Prevent Opioid Death) is a population-based state transition model that simulates a population with opioid use disorder (OUD), with characteristics including the natural history of OUD, movement on to and off medication for opioid use disorder (MOUD) and with outcomes such as overdose and cost. The model can be used to evaluate the effectiveness and cost-effectiveness of different strategies for offering MOUD, and is informed by data from the Massachusetts Public Health Data Warehouse, clinical trials, and national insurance claims data. We calibrated the model using Massachusetts-specific estimates of disease prevalence, admissions to treatment facilities, and overdose deaths. To learn more about the model and view our figures and user guide check out our Model Materials.
+
+https://www.syndemicslab.org/respond
 
 ## Dependencies
 **R**
@@ -18,7 +21,7 @@ Brief description, point to RESPOND v1 repository
 - Open Git Bash, and navigate the working directory to the location where you want the cloned directory.
 - Type *git clone*, and then paste the URL you copied earlier.  
 ```
-git clone https://github.com/SyndemicsLab/respond_sweeps_public.git
+git clone https://github.com/SyndemicsLab/Addressing-Encampments.git
 ```
 - Press **Enter** to create your local clone.
 
@@ -33,9 +36,9 @@ git clone https://github.com/SyndemicsLab/RESPONDv1.git
 - For Windows, open Command Prompt as an administrator. For Unix,
 - Navigate to the 'ec_base_inputs' folder.
 ```
-cd C:\YOURFILEPATH\respond_sweeps_public\ec_base_inputs
+cd C:\YOURFILEPATH\Addressing-Encampments\ec_base_inputs
 ```
-- Run *buildbase.bat* using the following command. This will create 1,000 input sets and copy them into 'respond_sweeps_public/ec_base_inputs'.
+- Run *buildbase.bat* using the following command. This will create 1,000 input sets and copy them into 'Addressing-Encampments/ec_base_inputs'.
 ```
 buildbase.bat
 ```
@@ -59,7 +62,7 @@ Run_SQ.bat
 **6. Run the results script to calculate results**
 - Navigate to the 'SQ_outputs' folder:
 ```
-cd C:\YOURFILEPATH\respond_sweeps_public\SQ_outputs
+cd C:\YOURFILEPATH\Addressing-Encampments\SQ_outputs
 ```
 - Run the Results script:
 ```
