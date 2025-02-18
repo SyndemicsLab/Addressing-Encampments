@@ -54,7 +54,7 @@ ggplot(uptake, aes(x = housing_uptake, y = value, col = strategy)) +
         text = element_text(size = 16)) +
   scale_color_manual(values = c("#59CD90", "#3FA7D6","#773344", "#EF452E"))
 ggsave("housing_uptake.svg", height = 4, width = 10)
-# Overdose Rate ================================================================http://127.0.0.1:34913/graphics/8b462d43-c988-4669-af91-e18bf2b89462.png
+# Overdose Rate =================================================================
 od <- fread("od_rate.csv")
 
 ggplot(od, aes(x = od_rate_mult, y = value, col = strategy)) + 
