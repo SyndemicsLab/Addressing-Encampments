@@ -47,14 +47,14 @@ ggplot(uptake, aes(x = housing_uptake, y = value, col = strategy)) +
   geom_line() + 
   geom_point(alpha = 0.5) +
   theme_bw() + 
-  labs(x = "Proportion taking up\n'Housing (MOUD)' from 'No Treatment'",
+  labs(x = "Proportion of Encampment Population\nAccepting Housing with MOUD at the Time of the Sweep",
        y = "All Deaths",
        col = "") + 
   theme(legend.position = "bottom",
         text = element_text(size = 16)) +
   scale_color_manual(values = c("#59CD90", "#3FA7D6","#773344", "#EF452E"))
 ggsave("housing_uptake.svg", height = 4, width = 10)
-# Overdose Rate ================================================================
+# Overdose Rate ================================================================http://127.0.0.1:34913/graphics/8b462d43-c988-4669-af91-e18bf2b89462.png
 od <- fread("od_rate.csv")
 
 ggplot(od, aes(x = od_rate_mult, y = value, col = strategy)) + 
